@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "axios": "^1.8.4",
+    "react-plaid-link": "^3.6.1",
+    "recharts": "^2.15.1"
+  }
+}
