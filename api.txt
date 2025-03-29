@@ -1,0 +1,160 @@
+Financial Foresight API Documentation
+=====================================
+
+Base URL: http://localhost:5000/api
+
+1. AUTHENTICATION
+-----------------
+POST /auth/register
+Request:
+{
+  "email": "user@example.com",
+  "name": "John Doe"
+}
+Response:
+{
+  "message": "User created (no auth)"
+}
+
+2. GOALS
+--------
+POST /goals
+Request:
+{
+  "name": "New Laptop", 
+  "target_amount": 1200,
+  "email": "user@example.com"
+}
+Response:
+{
+  "message": "Goal created",
+  "id": 1
+}
+
+GET /goals
+Response:
+[
+  {
+    "id": 1,
+    "name": "New Laptop",
+    "target_amount": 1200,
+    "current_amount": 0,
+    "progress": "0%"
+  }
+]
+
+3. DEBTS
+--------
+POST /debts
+Request:
+{
+  "name": "Student Loan",
+  "principal": 25000,
+  "remaining_balance": 20000,
+  "interest_rate": 4.5,
+  "minimum_payment": 300
+}
+Response:
+{
+  "message": "Debt added", 
+  "id": 1
+}
+
+GET /debts/minimum-payments
+Response:
+{
+  "total_minimum_payments": 300
+}
+
+4. TRANSACTIONS
+---------------
+POST /transactions
+Request:
+{
+  "name": "Groceries",
+  "amount": 85.50,
+  "category": "food",
+  "is_income": false
+}
+Response:
+{
+  "message": "Transaction added"
+}
+
+GET /transactions/summary
+Response:
+{
+  "income": 2500,
+  "expenses": 85.5,
+  "net": 2414.5
+}
+
+5. BUDGET
+---------
+POST /budget
+Request:
+{
+  "categories": {
+    "food": 500,
+    "entertainment": 200
+  }
+}
+Response:
+{
+  "message": "Budget updated"
+}
+
+GET /budget/status
+Response:
+{
+  "food": {
+    "limit": 500,
+    "spent": 85.5,
+    "remaining": 414.5
+  },
+  "entertainment": {
+    "limit": 200,
+    "spent": 0,
+    "remaining": 200
+  }
+}
+
+6. PLAID (MOCK DATA)
+--------------------
+GET /plaid/link
+Response:
+{
+  "link_token": "mock-token-123"
+}
+
+GET /plaid/transactions
+Response:
+[
+  {
+    "id": 1,
+    "amount": -32.45,
+    "category": "food",
+    "date": "2023-06-01"
+  }
+]
+
+ERROR HANDLING
+--------------
+All errors return:
+{
+  "error": "Error message",
+  "code": 400
+}
+
+TESTING NOTES
+------------
+- No authentication required for demo
+- Use email: "user@example.com" as default
+- Data persists until server restart
+
+FRONTEND TIPS
+-------------
+1. Calculate goal progress:
+   progress = (currentAmount / targetAmount) * 100
+2. Poll /budget/status after transactions
+3. Use mock Plaid endpoints for prototyping
