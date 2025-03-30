@@ -4,13 +4,14 @@
 import { useState, useRef, useEffect } from "react";
 import { Menu, X, Home, PiggyBank, BookOpen, BarChart2, LogOut } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation"; // Use for logout navigation
+import { useRouter, usePathname } from "next/navigation"; // Use for logout navigation
 
 // No type annotations needed for props
 export default function MainAppLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const sidebarRef = useRef(null); // No type needed for ref
   const router = useRouter(); // For logout
+  const pathname = usePathname();
 
   // Effect for closing sidebar on outside click
   useEffect(() => {
@@ -38,6 +39,12 @@ export default function MainAppLayout({ children }) {
     router.push('/'); // Redirect to login page
   }
 
+  const navItems = [
+    { name: 'Dashboard', path: '/main/dashboard', icon: '📊' },
+    { name: 'Savings Goal', path: '/main/savings', icon: '💰' },
+    { name: 'Education', path: '/main/education', icon: '📚' },
+  ];
+
   return (
     <div className="relative min-h-screen">
       {/* Sidebar Overlay for mobile */}
@@ -60,10 +67,22 @@ export default function MainAppLayout({ children }) {
          <nav className="p-4 flex flex-col h-[calc(100vh-65px)]">
              <ul className="space-y-2 flex-grow">
                  {/* Update hrefs */}
-                 <li><Link href="/dashboard" className="flex items-center gap-3 p-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors" onClick={closeSidebar}><Home size={18} /><span>Dashboard</span></Link></li>
-                 <li><Link href="/savings" className="flex items-center gap-3 p-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors" onClick={closeSidebar}><PiggyBank size={18} /><span>Savings Goals</span></Link></li>
-                 <li><Link href="/education" className="flex items-center gap-3 p-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors" onClick={closeSidebar}><BookOpen size={18} /><span>Education</span></Link></li>
-                 <li><Link href="/what-if" className="flex items-center gap-3 p-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors" onClick={closeSidebar}><BarChart2 size={18} /><span>What-If</span></Link></li>
+                 {navItems.map((item) => (
+                   <li key={item.path}>
+                     <Link
+                       href={item.path}
+                       className={`flex items-center gap-3 p-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors ${
+                         pathname === item.path
+                           ? 'bg-blue-50 text-blue-600'
+                           : ''
+                       }`}
+                       onClick={closeSidebar}
+                     >
+                       <span className="text-xl">{item.icon}</span>
+                       <span>{item.name}</span>
+                     </Link>
+                   </li>
+                 ))}
              </ul>
              <div className="mt-auto pb-4">
                  <button className="flex items-center gap-3 p-3 w-full rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors" onClick={handleLogout}><LogOut size={18} /><span>Logout</span></button>
