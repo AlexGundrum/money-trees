@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Selection highlight for selectable text */
+.selectableText ::selection {
+  background-color: rgba(45, 62, 80, 0.2);
+}
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;

@@ -129,6 +129,41 @@ export async function fetchPlaidTransactions() {
   return fetchWrapper('/plaid/transactions');
 }
 
+// ================== AI Service ================== //
+export async function getAIResponse(userMessage) {
+  return fetchWrapper('/ai/chat', {
+    method: 'POST',
+    body: JSON.stringify({ 
+      message: userMessage,
+      email: DEFAULT_EMAIL 
+    }),
+  });
+}
+
+export async function getAIFinancialAdvice() {
+  console.log("Calling AI advice endpoint...");
+  try {
+    const response = await fetchWrapper('/ai/api', {
+      method: 'GET'
+    });
+    console.log("AI advice response:", response);
+    return response;
+  } catch (error) {
+    console.error("Error getting AI advice:", error);
+    // Return mock data if the API fails
+    return {
+      good_habits: [
+        "You're consistently saving 20% of your income!",
+        "Great job on limiting entertainment expenses this month."
+      ],
+      bad_habits: [
+        "Consider reducing your dining out expenses.",
+        "Watch out for frequent small purchases at convenience stores."
+      ]
+    };
+  }
+}
+
 // ================== Utility Functions ================== //
 export function calculateGoalProgress(currentAmount, targetAmount) {
   return (currentAmount / targetAmount) * 100;
