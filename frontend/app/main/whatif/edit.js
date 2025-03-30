@@ -17,8 +17,13 @@ export default function FormComponent() {
       const itemPrice = Number(formData.field2);
       let extraFees = {};
 
-      if (formData.field1.toLowerCase() === "car") {
+      const itemType = formData.field1.toLowerCase();
+      if (itemType === "car") {
         extraFees = calculateCarFees(itemPrice);
+      } else if (itemType === "house") {
+        extraFees = calculateHouseFees(itemPrice);
+      } else if (itemType === "student loan") {
+        extraFees = calculateStudentLoanFees(itemPrice);
       }
 
       setBoxes([...boxes, { ...formData, extraFees }]);
@@ -26,22 +31,37 @@ export default function FormComponent() {
     }
   };
 
-  const calculateCarFees = (price) => {
-    const randomInRange = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+  const randomInRange = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-    return {
-      salesTax: (price * (randomInRange(5, 10) / 100)).toFixed(2),
-      registrationFee: randomInRange(50, 400),
-      titleFee: randomInRange(15, 150),
-      dealerFee: randomInRange(100, 600),
-      loanOriginationFee: randomInRange(100, 500),
-      warranty: randomInRange(1000, 3000),
-      gapInsurance: randomInRange(400, 700),
-      inspectionFee: randomInRange(20, 100),
-      destinationCharge: randomInRange(900, 1500),
-      miscFees: randomInRange(50, 300),
-    };
-  };
+  const calculateCarFees = (price) => ({
+    salesTax: (price * (randomInRange(5, 10) / 100)).toFixed(2),
+    registrationFee: randomInRange(50, 400),
+    titleFee: randomInRange(15, 150),
+    dealerFee: randomInRange(100, 600),
+    loanOriginationFee: randomInRange(100, 500),
+    warranty: randomInRange(1000, 3000),
+    gapInsurance: randomInRange(400, 700),
+    inspectionFee: randomInRange(20, 100),
+    destinationCharge: randomInRange(900, 1500),
+    miscFees: randomInRange(50, 300),
+  });
+
+  const calculateHouseFees = (price) => ({
+    propertyTax: (price * (randomInRange(1, 3) / 100)).toFixed(2),
+    homeownersInsurance: randomInRange(800, 2500),
+    closingCosts: (price * (randomInRange(2, 5) / 100)).toFixed(2),
+    homeInspectionFee: randomInRange(300, 600),
+    titleInsurance: randomInRange(500, 1500),
+    HOAFees: randomInRange(100, 500),
+    mortgageOriginationFee: (price * (randomInRange(0.5, 1.5) / 100)).toFixed(2),
+  });
+
+  const calculateStudentLoanFees = (loanAmount) => ({
+    originationFee: (loanAmount * (randomInRange(1, 5) / 100)).toFixed(2),
+    interestOver10Years: (loanAmount * (randomInRange(3, 7) / 100) * 10).toFixed(2),
+    latePaymentFees: randomInRange(25, 100),
+    consolidationFees: randomInRange(200, 600),
+  });
 
   const calculateTotalCost = (basePrice, fees) => {
     const totalFees = Object.values(fees).reduce((acc, fee) => acc + Number(fee), 0);
@@ -61,7 +81,7 @@ export default function FormComponent() {
               name="field1"
               value={formData.field1}
               onChange={handleChange}
-              placeholder="Enter item name (e.g., Car)"
+              placeholder="Enter item name (e.g., Car, House, Student Loan)"
               className="w-full p-2 border rounded"
             />
           </div>
@@ -82,7 +102,7 @@ export default function FormComponent() {
           type="submit"
           className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
         >
-          Create Box
+          Let's see
         </button>
       </form>
 
@@ -93,10 +113,10 @@ export default function FormComponent() {
             <p className="font-bold">Name: {box.field1}</p>
             <p>Price: ${box.field2}</p>
 
-            {box.extraFees.salesTax && (
+            {Object.keys(box.extraFees).length > 0 && (
               <>
                 <hr className="my-2" />
-                <p className="font-semibold">Additional Fees for Car Purchase:</p>
+                <p className="font-semibold">Additional Fees for {box.field1}:</p>
                 <ul className="text-sm text-gray-600">
                   {Object.entries(box.extraFees).map(([key, value]) => (
                     <li key={key} className="flex justify-between">
