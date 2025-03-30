@@ -13,7 +13,7 @@ export default function FormComponent() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (formData.field1 && formData.field2 && formData.field3) {
+    if (formData.field1 && formData.field2 ) {
       setBoxes([...boxes, formData]); // Add new box
       setFormData({ field1: "", field2: "" , field3: ""}); // Reset form
     }
@@ -21,41 +21,41 @@ export default function FormComponent() {
 
   return (
     <div className="p-4 border rounded-lg ">
-      <h2 className="text-lg font-semibold mb-4 text-center">Create a Box</h2>
+      <h2 className="text-lg font-semibold mb-4 text-center">What if I want to </h2>
       
       <form onSubmit={handleSubmit} className="space-y-3">
         {/* Input fields with titles and horizontal layout */}
         <div className="flex gap-4">
           <div className="flex-1">
-            <label className="block font-semibold mb-1">Field 1</label>
+            <label className="block font-semibold mb-1">Purchase </label>
             <input
               type="text"
               name="field1"
               value={formData.field1}
               onChange={handleChange}
-              placeholder="Enter first value"
+              placeholder="Enter item name"
               className="w-full p-2 border rounded"
             />
           </div>
           <div className="flex-1">
-            <label className="block font-semibold mb-1">Field 2</label>
+            <label className="block font-semibold mb-1">Price</label>
             <input
-              type="text"
+              type="number"
               name="field2"
               value={formData.field2}
               onChange={handleChange}
-              placeholder="Enter second value"
+              placeholder="Enter price"
               className="w-full p-2 border rounded"
             />
           </div>
           <div className="flex-1">
-            <label className="block font-semibold mb-1">Field 3</label>
+            <label className="block font-semibold mb-1">No idea tbh</label>
             <input
               type="text"
               name="field3"
               value={formData.field3}
               onChange={handleChange}
-              placeholder="Enter second value"
+              placeholder="We ball"
               className="w-full p-2 border rounded"
             />
           </div>
@@ -76,9 +76,11 @@ export default function FormComponent() {
             key={index}
             className="p-4 border rounded bg-gray-100 shadow-md"
           >
-            <p className="font-bold">Field 1: {box.field1}</p>
-            <p>Field 2: {box.field2}</p>
-            <p>Field 3: {box.field3}</p>
+            <p className="font-bold">Name: {box.field1}</p>
+            <p>Price: {"$"+box.field2}</p>
+            <p>
+                Give me some
+            </p>
           </div>
         ))}
       </div>
