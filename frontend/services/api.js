@@ -175,3 +175,27 @@ export function formatCurrency(amount) {
     currency: 'USD'
   }).format(amount);
 }
+
+export async function analyzeText(fullText, highlightedText) {
+  try {
+    const response = await fetch('http://localhost:5000/analyze', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+        full_text: fullText,
+        highlighted_text: highlightedText 
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to analyze text');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error analyzing text:', error);
+    throw error;
+  }
+}
