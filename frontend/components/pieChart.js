@@ -1,38 +1,56 @@
 "use client"; // Required for client-side components in Next.js
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 import { Pie } from "react-chartjs-2";
 
-ChartJS.register(ArcElement, Tooltip, Legend);
-
-const data = {
-    datasets: [
-        {
-            label: "# of Votes",
-            data: [12, 19, 3, 5, 2, 3],
-            backgroundColor: [
-                "rgba(255, 99, 132, 0.2)",
-                "rgba(54, 162, 235, 0.2)",
-                "rgba(255, 206, 86, 0.2)",
-                "rgba(75, 192, 192, 0.2)",
-                "rgba(153, 102, 255, 0.2)",
-                "rgba(255, 159, 64, 0.2)",
-            ],
-            borderColor: [
-                "rgba(255, 99, 132, 1)",
-                "rgba(54, 162, 235, 1)",
-                "rgba(255, 206, 86, 1)",
-                "rgba(75, 192, 192, 1)",
-                "rgba(153, 102, 255, 1)",
-                "rgba(255, 159, 64, 1)",
-            ],
-            borderWidth: 1,
-        },
-    ],
-    labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-};
+ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
 export default function PieChart() {
-  return <Pie data={data} />;
+    const [chartData, setChartData] = useState(null);
+    
+    useEffect(() => {
+        fetch("/data.json") // Ensure the JSON file is placed in the public folder
+            .then((response) => response.json())
+            .then((data) => {
+                setChartData({
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: data.dataset.label,
+                            data: data.dataset.data,
+                            backgroundColor: data.dataset.backgroundColor,
+                            borderColor: data.dataset.borderColor,
+                            borderWidth: data.dataset.borderWidth,
+                        },
+                    ],
+                });
+            })
+            .catch((error) => console.error("Error loading JSON data:", error));
+    }, []);
+
+    if (!chartData) return <p>Loading chart...</p>;
+
+    const options = {
+        plugins: {
+            legend: {
+                display: false, // Hide legend
+            },
+            datalabels: {
+                color: "white",
+                font: {
+                    weight: "bold",
+                    size: 14,
+                },
+                anchor: "center",
+                align: "center",
+                formatter: (value, context) => {
+                    return context.chart.data.labels[context.dataIndex];
+                },
+            },
+        },
+    };
+
+    return <Pie data={chartData} options={options} />;
 }
