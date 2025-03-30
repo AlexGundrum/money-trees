@@ -1,0 +1,15 @@
+<svg width="300" height="150" viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
+  <g fill="none">
+    <!-- Main Windshield -->
+    <path d="M120,60 L130,40 L170,40 L180,60 Z" fill="#BFDBFE" stroke="#3B82F6" stroke-width="1.5"/>
+    
+    <!-- Side Windows -->
+    <path d="M100,80 L120,60 L180,60 L200,80 Z" fill="#93C5FD" stroke="#3B82F6" stroke-width="1.5"/>
+    
+    <!-- Window Dividers -->
+    <line x1="150" y1="40" x2="150" y2="60" stroke="#3B82F6" stroke-width="1.5"/>
+    <line x1="150" y1="60" x2="150" y2="80" stroke="#3B82F6" stroke-width="1.5"/>
+    <line x1="120" y1="60" x2="120" y2="80" stroke="#3B82F6" stroke-width="1.5"/>
+    <line x1="180" y1="60" x2="180" y2="80" stroke="#3B82F6" stroke-width="1.5"/>
+  </g>
+</svg> 

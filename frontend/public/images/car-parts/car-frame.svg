@@ -1,0 +1,9 @@
+<svg width="300" height="150" viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
+  <g fill="none" stroke="#000" stroke-width="2">
+    <!-- Car Body Frame -->
+    <path d="M50,100 C50,90 60,80 70,80 L100,80 L120,60 L180,60 L200,80 L230,80 C240,80 250,90 250,100 L250,110 C250,115 245,120 240,120 L60,120 C55,120 50,115 50,110 Z" fill="#3B82F6" stroke="#2563EB"/>
+    
+    <!-- Bottom of car -->
+    <line x1="50" y1="120" x2="250" y2="120" stroke="#2563EB" stroke-width="3"/>
+  </g>
+</svg> 

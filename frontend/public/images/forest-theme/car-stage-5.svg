@@ -1,0 +1,35 @@
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Car Body - Final Stage -->
+  <rect x="25" y="60" width="50" height="10" rx="2" fill="#3B82F6"/>
+  <path d="M20 70 L30 70 L35 65 L65 65 L70 70 L80 70" stroke="#1E40AF" stroke-width="2" fill="none"/>
+  
+  <!-- Wheels with Complete Details -->
+  <circle cx="30" cy="70" r="5" fill="#111827"/>
+  <circle cx="30" cy="70" r="2" fill="#374151"/>
+  <circle cx="70" cy="70" r="5" fill="#111827"/>
+  <circle cx="70" cy="70" r="2" fill="#374151"/>
+  
+  <!-- Windows -->
+  <path d="M35 65 L40 55 L60 55 L65 65" stroke="#60A5FA" stroke-width="1.5" fill="#93C5FD"/>
+  
+  <!-- Lights -->
+  <rect x="22" y="63" width="5" height="3" rx="1.5" fill="#FBBF24"/>
+  <rect x="73" y="63" width="5" height="3" rx="1.5" fill="#FBBF24"/>
+  
+  <!-- Door Lines -->
+  <line x1="45" y1="60" x2="45" y2="70" stroke="#1E40AF" stroke-width="1"/>
+  <line x1="55" y1="60" x2="55" y2="70" stroke="#1E40AF" stroke-width="1"/>
+  
+  <!-- Door Handles -->
+  <rect x="47" y="63" width="2" height="1" rx="0.5" fill="#F3F4F6"/>
+  <rect x="57" y="63" width="2" height="1" rx="0.5" fill="#F3F4F6"/>
+  
+  <!-- Grill -->
+  <rect x="25" y="66" width="4" height="3" rx="1" fill="#1F2937"/>
+  
+  <!-- Shine Effects -->
+  <path d="M35 62 L40 58 L60 58" stroke="#DBEAFE" stroke-width="0.7" stroke-opacity="0.7"/>
+  
+  <!-- Shadow Under Car -->
+  <ellipse cx="50" cy="75" rx="30" ry="2" fill="#000000" fill-opacity="0.2"/>
+</svg> 

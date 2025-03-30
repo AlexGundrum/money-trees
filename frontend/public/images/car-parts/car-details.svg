@@ -1,0 +1,28 @@
+<svg width="300" height="150" viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
+  <g fill="none">
+    <!-- Door Lines -->
+    <line x1="110" y1="80" x2="110" y2="120" stroke="#2563EB" stroke-width="1.5"/>
+    <line x1="190" y1="80" x2="190" y2="120" stroke="#2563EB" stroke-width="1.5"/>
+    
+    <!-- Door Handles -->
+    <rect x="115" y="90" width="10" height="3" rx="1.5" fill="#94A3B8" stroke="#64748B" stroke-width="1"/>
+    <rect x="175" y="90" width="10" height="3" rx="1.5" fill="#94A3B8" stroke="#64748B" stroke-width="1"/>
+    
+    <!-- Hood Lines -->
+    <path d="M125,80 C140,75 160,75 175,80" stroke="#2563EB" stroke-width="1" fill="none"/>
+    
+    <!-- Bumpers -->
+    <path d="M50,110 C50,105 55,105 60,105 L240,105 C245,105 250,105 250,110" stroke="#94A3B8" stroke-width="3" fill="none"/>
+    
+    <!-- Trim details -->
+    <path d="M50,100 L250,100" stroke="#94A3B8" stroke-width="1" fill="none"/>
+    
+    <!-- Logos and brand elements -->
+    <circle cx="150" cy="105" r="8" fill="#3B82F6" stroke="#2563EB" stroke-width="1.5"/>
+    <text x="150" y="108" font-family="Arial" font-size="10" fill="white" text-anchor="middle">F</text>
+    
+    <!-- License plate -->
+    <rect x="135" y="110" width="30" height="8" fill="white" stroke="#64748B" stroke-width="1"/>
+    <text x="150" y="117" font-family="Arial" font-size="6" fill="#1E293B" text-anchor="middle">FINCAR</text>
+  </g>
+</svg> 

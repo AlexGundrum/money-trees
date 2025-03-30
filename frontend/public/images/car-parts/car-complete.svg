@@ -1,0 +1,81 @@
+<svg width="300" height="150" viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
+  <g fill="none">
+    <!-- Car Body Frame -->
+    <path d="M50,100 C50,90 60,80 70,80 L100,80 L120,60 L180,60 L200,80 L230,80 C240,80 250,90 250,100 L250,110 C250,115 245,120 240,120 L60,120 C55,120 50,115 50,110 Z" fill="#3B82F6" stroke="#2563EB" stroke-width="2"/>
+    
+    <!-- Bottom of car -->
+    <line x1="50" y1="120" x2="250" y2="120" stroke="#2563EB" stroke-width="3"/>
+
+    <!-- Main Windshield -->
+    <path d="M120,60 L130,40 L170,40 L180,60 Z" fill="#BFDBFE" stroke="#3B82F6" stroke-width="1.5"/>
+    
+    <!-- Side Windows -->
+    <path d="M100,80 L120,60 L180,60 L200,80 Z" fill="#93C5FD" stroke="#3B82F6" stroke-width="1.5"/>
+    
+    <!-- Window Dividers -->
+    <line x1="150" y1="40" x2="150" y2="60" stroke="#3B82F6" stroke-width="1.5"/>
+    <line x1="150" y1="60" x2="150" y2="80" stroke="#3B82F6" stroke-width="1.5"/>
+    <line x1="120" y1="60" x2="120" y2="80" stroke="#3B82F6" stroke-width="1.5"/>
+    <line x1="180" y1="60" x2="180" y2="80" stroke="#3B82F6" stroke-width="1.5"/>
+
+    <!-- Left Wheel -->
+    <circle cx="80" cy="120" r="20" fill="#1E293B" stroke="#0F172A" stroke-width="2"/>
+    <circle cx="80" cy="120" r="15" fill="#1E293B" stroke="#64748B" stroke-width="1.5"/>
+    <circle cx="80" cy="120" r="5" fill="#E2E8F0"/>
+    <!-- Wheel Spokes -->
+    <line x1="80" y1="105" x2="80" y2="135" stroke="#94A3B8" stroke-width="1.5"/>
+    <line x1="65" y1="120" x2="95" y2="120" stroke="#94A3B8" stroke-width="1.5"/>
+    <line x1="69" y1="109" x2="91" y2="131" stroke="#94A3B8" stroke-width="1.5"/>
+    <line x1="69" y1="131" x2="91" y2="109" stroke="#94A3B8" stroke-width="1.5"/>
+    
+    <!-- Right Wheel -->
+    <circle cx="220" cy="120" r="20" fill="#1E293B" stroke="#0F172A" stroke-width="2"/>
+    <circle cx="220" cy="120" r="15" fill="#1E293B" stroke="#64748B" stroke-width="1.5"/>
+    <circle cx="220" cy="120" r="5" fill="#E2E8F0"/>
+    <!-- Wheel Spokes -->
+    <line x1="220" y1="105" x2="220" y2="135" stroke="#94A3B8" stroke-width="1.5"/>
+    <line x1="205" y1="120" x2="235" y2="120" stroke="#94A3B8" stroke-width="1.5"/>
+    <line x1="209" y1="109" x2="231" y2="131" stroke="#94A3B8" stroke-width="1.5"/>
+    <line x1="209" y1="131" x2="231" y2="109" stroke="#94A3B8" stroke-width="1.5"/>
+
+    <!-- Headlights -->
+    <ellipse cx="60" cy="90" rx="10" ry="5" fill="#FBBF24" stroke="#F59E0B" stroke-width="1.5"/>
+    <ellipse cx="60" cy="90" rx="5" ry="2.5" fill="#FEF3C7"/>
+    
+    <ellipse cx="240" cy="90" rx="10" ry="5" fill="#FBBF24" stroke="#F59E0B" stroke-width="1.5"/>
+    <ellipse cx="240" cy="90" rx="5" ry="2.5" fill="#FEF3C7"/>
+    
+    <!-- Taillights -->
+    <rect x="55" y="100" width="10" height="5" rx="2.5" fill="#EF4444" stroke="#DC2626" stroke-width="1.5"/>
+    <rect x="235" y="100" width="10" height="5" rx="2.5" fill="#EF4444" stroke="#DC2626" stroke-width="1.5"/>
+    
+    <!-- Fog lights -->
+    <circle cx="70" cy="105" r="3" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1"/>
+    <circle cx="230" cy="105" r="3" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1"/>
+
+    <!-- Door Lines -->
+    <line x1="110" y1="80" x2="110" y2="120" stroke="#2563EB" stroke-width="1.5"/>
+    <line x1="190" y1="80" x2="190" y2="120" stroke="#2563EB" stroke-width="1.5"/>
+    
+    <!-- Door Handles -->
+    <rect x="115" y="90" width="10" height="3" rx="1.5" fill="#94A3B8" stroke="#64748B" stroke-width="1"/>
+    <rect x="175" y="90" width="10" height="3" rx="1.5" fill="#94A3B8" stroke="#64748B" stroke-width="1"/>
+    
+    <!-- Hood Lines -->
+    <path d="M125,80 C140,75 160,75 175,80" stroke="#2563EB" stroke-width="1" fill="none"/>
+    
+    <!-- Bumpers -->
+    <path d="M50,110 C50,105 55,105 60,105 L240,105 C245,105 250,105 250,110" stroke="#94A3B8" stroke-width="3" fill="none"/>
+    
+    <!-- Trim details -->
+    <path d="M50,100 L250,100" stroke="#94A3B8" stroke-width="1" fill="none"/>
+    
+    <!-- Logos and brand elements -->
+    <circle cx="150" cy="105" r="8" fill="#3B82F6" stroke="#2563EB" stroke-width="1.5"/>
+    <text x="150" y="108" font-family="Arial" font-size="10" fill="white" text-anchor="middle">F</text>
+    
+    <!-- License plate -->
+    <rect x="135" y="110" width="30" height="8" fill="white" stroke="#64748B" stroke-width="1"/>
+    <text x="150" y="117" font-family="Arial" font-size="6" fill="#1E293B" text-anchor="middle">FINCAR</text>
+  </g>
+</svg> 

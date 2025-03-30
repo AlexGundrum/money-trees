@@ -1,0 +1,23 @@
+<svg width="300" height="150" viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
+  <g fill="none">
+    <!-- Left Wheel -->
+    <circle cx="80" cy="120" r="20" fill="#1E293B" stroke="#0F172A" stroke-width="2"/>
+    <circle cx="80" cy="120" r="15" fill="#1E293B" stroke="#64748B" stroke-width="1.5"/>
+    <circle cx="80" cy="120" r="5" fill="#E2E8F0"/>
+    <!-- Wheel Spokes -->
+    <line x1="80" y1="105" x2="80" y2="135" stroke="#94A3B8" stroke-width="1.5"/>
+    <line x1="65" y1="120" x2="95" y2="120" stroke="#94A3B8" stroke-width="1.5"/>
+    <line x1="69" y1="109" x2="91" y2="131" stroke="#94A3B8" stroke-width="1.5"/>
+    <line x1="69" y1="131" x2="91" y2="109" stroke="#94A3B8" stroke-width="1.5"/>
+    
+    <!-- Right Wheel -->
+    <circle cx="220" cy="120" r="20" fill="#1E293B" stroke="#0F172A" stroke-width="2"/>
+    <circle cx="220" cy="120" r="15" fill="#1E293B" stroke="#64748B" stroke-width="1.5"/>
+    <circle cx="220" cy="120" r="5" fill="#E2E8F0"/>
+    <!-- Wheel Spokes -->
+    <line x1="220" y1="105" x2="220" y2="135" stroke="#94A3B8" stroke-width="1.5"/>
+    <line x1="205" y1="120" x2="235" y2="120" stroke="#94A3B8" stroke-width="1.5"/>
+    <line x1="209" y1="109" x2="231" y2="131" stroke="#94A3B8" stroke-width="1.5"/>
+    <line x1="209" y1="131" x2="231" y2="109" stroke="#94A3B8" stroke-width="1.5"/>
+  </g>
+</svg> 
