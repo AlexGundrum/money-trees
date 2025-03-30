@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from extensions import db
-from models import Budget, FinancialInfo
+from models import Budget, Transaction
 
 budget_bp = Blueprint('budget', __name__)
 
@@ -18,7 +18,7 @@ def set_budget():
 @budget_bp.route('/status', methods=['GET'])
 def budget_status():
     budget = Budget.query.first()  # Demo: Get first budget
-    transactions = FinancialInfo.query.filter_by(is_income=False).all()
+    transactions = Transaction.query.filter_by(is_income=False).all()
     
     status = {}
     for category, limit in budget.category_limits.items():

@@ -42,18 +42,32 @@ class Debt(db.Model):
     start_date = db.Column(db.Date)
     user_email = db.Column(db.String(120), db.ForeignKey('users.email'))
 
+
+
 class Transaction(db.Model):
     __tablename__ = 'transactions'
+    
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     amount = db.Column(db.Float, nullable=False)
     is_income = db.Column(db.Boolean, default=False)
-    category = db.Column(db.String(50))
-    date = db.Column(db.Date, default=datetime.utcnow)
-    payment_method = db.Column(db.String(50))
-    recurring = db.Column(db.Boolean, default=False)
-    plaid_transaction_id = db.Column(db.String(100))
-    user_email = db.Column(db.String(120), db.ForeignKey('users.email'))
+    category = db.Column(db.String(50), default='other')
+    user_email = db.Column(db.String(100), nullable=False, default='demo@user.com')
+    date = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return f'<Transaction {self.name} ${self.amount} ({self.category})>'
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'amount': self.amount,
+            'is_income': self.is_income,
+            'category': self.category,
+            'date': self.date.isoformat(),
+            'user_email': self.user_email
+        }
 
 class Budget(db.Model):
     __tablename__ = 'budgets'
