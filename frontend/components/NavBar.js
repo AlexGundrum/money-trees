@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Menu, X, Home, PiggyBank, BookOpen, BarChart2, LogOut } from "lucide-react"
+import { Menu, X, Home, PiggyBank, BookOpen, BarChart2, LogOut, Clock, Tree } from "lucide-react"
 import Link from "next/link"
 
 const navBar = () => {
@@ -35,7 +35,7 @@ const navBar = () => {
 
   // The JSX structure remains identical
   return (
-    <div className="min-h-screen bg-slate-50 relative">
+    <div className="min-h-screen bg-green-50 relative">
       {/* Sidebar Overlay */}
       {isSidebarOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-30 z-20 md:hidden" onClick={() => setIsSidebarOpen(false)} />
@@ -48,11 +48,11 @@ const navBar = () => {
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="p-6 flex justify-between items-center border-b border-slate-200">
-          <h1 className="text-blue-800 font-semibold text-xl">FinStudent</h1>
+        <div className="p-6 flex justify-between items-center border-b border-green-200">
+          <h1 className="text-green-800 font-semibold text-xl">MoneyTree</h1>
           <button
             onClick={toggleSidebar}
-            className="p-1 rounded-md hover:bg-slate-100 transition-colors"
+            className="p-1 rounded-md hover:bg-green-100 transition-colors"
             aria-label="Close menu"
           >
             <X size={20} />
@@ -64,7 +64,7 @@ const navBar = () => {
             <li>
               <Link
                 href="/dashboard"
-                className="flex items-center gap-3 p-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                className="flex items-center gap-3 p-3 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
                 onClick={() => setIsSidebarOpen(false)}
               >
                 <Home size={18} />
@@ -73,8 +73,8 @@ const navBar = () => {
             </li>
             <li>
               <Link
-                href="/savings-goals" // Make sure this page exists or create it later
-                className="flex items-center gap-3 p-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                href="/savings-goals"
+                className="flex items-center gap-3 p-3 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
                 onClick={() => setIsSidebarOpen(false)}
               >
                 <PiggyBank size={18} />
@@ -83,8 +83,28 @@ const navBar = () => {
             </li>
             <li>
               <Link
-                href="/education" // Make sure this page exists or create it later
-                className="flex items-center gap-3 p-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                href="/forest"
+                className="flex items-center gap-3 p-3 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <Tree size={18} />
+                <span>Forest</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/focus"
+                className="flex items-center gap-3 p-3 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <Clock size={18} />
+                <span>Focus</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/education"
+                className="flex items-center gap-3 p-3 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
                 onClick={() => setIsSidebarOpen(false)}
               >
                 <BookOpen size={18} />
@@ -94,7 +114,7 @@ const navBar = () => {
             <li>
               <Link
                 href="/what-if" // Make sure this page exists or create it later
-                className="flex items-center gap-3 p-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                className="flex items-center gap-3 p-3 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
                 onClick={() => setIsSidebarOpen(false)}
               >
                 <BarChart2 size={18} />
@@ -105,7 +125,7 @@ const navBar = () => {
 
           <div className="absolute bottom-8 left-0 w-full px-4">
             <button
-              className="flex items-center gap-3 p-3 w-full rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+              className="flex items-center gap-3 p-3 w-full rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
               onClick={() => {
                 console.log("Logout clicked"); // Replace with actual logout logic
                 setIsSidebarOpen(false);
@@ -130,7 +150,7 @@ const navBar = () => {
           <div className="flex items-center mb-6">
             <button
               onClick={toggleSidebar}
-              className="p-2 rounded-md hover:bg-slate-200 transition-colors mr-3"
+              className="p-2 rounded-md hover:bg-green-200 transition-colors mr-3"
               aria-label="Menu"
               data-menu-trigger // Added data attribute to help handleClickOutside ignore menu clicks
             >
