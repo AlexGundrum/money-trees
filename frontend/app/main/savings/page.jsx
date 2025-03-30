@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plant, Trophy, DollarSign, ArrowRight, Check, Leaf } from 'lucide-react';
+import { Sprout, Trophy, DollarSign, ArrowRight, Check, Leaf } from 'lucide-react';
 import SavingsTreeSlider from '@/components/SavingsTreeSlider';
 
 export default function SavingsPage() {
@@ -67,7 +67,7 @@ export default function SavingsPage() {
   const EmptyState = () => (
     <div className="card hover:border-green-200 text-center py-10 px-6">
       <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-green-100 rounded-full">
-        <Plant size={32} className="text-green-600" />
+        <Sprout size={32} className="text-green-600" />
       </div>
       <h2 className="text-xl font-semibold text-green-800 mb-2">Start Growing Your Savings</h2>
       <p className="text-gray-600 mb-8 max-w-md mx-auto">
@@ -77,7 +77,7 @@ export default function SavingsPage() {
         onClick={() => setHasGoal(false)} 
         className="btn-primary inline-flex items-center"
       >
-        <Plant size={16} className="mr-2" />
+        <Sprout size={16} className="mr-2" />
         Create Savings Goal
       </button>
     </div>
