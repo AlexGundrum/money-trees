@@ -3,11 +3,8 @@
 import { useState, useRef, useEffect } from "react"
 import { Menu, X, Home, PiggyBank, BookOpen, BarChart2, LogOut } from "lucide-react"
 import Link from "next/link"
-import Script from "next/script"
-import React from "react";
-import PieChart from "./pieChart"; // Import the component
 
-const Dashboard = () => {
+const navBar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   // Removed <HTMLDivElement> type annotation from useRef
   const sidebarRef = useRef(null)
@@ -143,43 +140,10 @@ const Dashboard = () => {
           </div>
 
           {/* This is the actual dashboard content */}
-          <div className="flex flex-col md:flex-row md:space-x-8">
-            {/* Left Column */}
-            <div className="md:w-2/3">
-              <div style={{ width: "50%", margin: "auto", padding: "20px" }}>
-                <PieChart style={{ width: "10%", margin: "auto", padding: "20px" }}/>
-              </div>
-            </div>
-
-            {/* Right Column */}
-            <div className="md:w-1/3 mt-6 md:mt-0">
-              <div className="bg-blue-50 rounded-2xl shadow-md p-6">
-                <h2 className="text-blue-800 text-xl font-semibold mb-4">AI Spending Insights</h2>
-
-                <div className="mb-6">
-                  <h3 className="text-teal-700 font-medium mb-2">What You're Doing Well 👍</h3>
-                  <ul className="space-y-2 text-gray-600 list-disc list-inside"> {/* Added list style */}
-                    <li>Consistent savings in your emergency fund</li>
-                    <li>Reduced dining out expenses this month</li>
-                    <li>On track with your retirement contributions</li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-gray-700 font-medium mb-2">Areas to Improve 🤔</h3>
-                  <ul className="space-y-2 text-gray-600 list-disc list-inside"> {/* Added list style */}
-                    <li>Subscription services slightly over budget</li>
-                    <li>Consider reducing impulse purchases</li>
-                    <li>Look into lower-cost alternatives for utilities</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
   )
 }
 
-export default Dashboard
+export default navBar
