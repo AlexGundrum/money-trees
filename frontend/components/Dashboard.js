@@ -116,8 +116,8 @@ const Dashboard = () => {
 
           <div className="flex flex-col md:flex-row md:space-x-8">
             <div className="md:w-2/3">
-              <div style={{ width: "50%", margin: "auto", padding: "20px" }}>
-                <PieChart style={{ width: "10%", margin: "auto", padding: "20px" }}/>
+              <div className="bg-white rounded-2xl shadow-md p-6">
+                <PieChart />
               </div>
             </div>
 
