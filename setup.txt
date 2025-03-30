@@ -1,0 +1,18 @@
+# Frontend Setup Instructions for Tom
+
+Hey Tom, run these commands in your terminal to get the frontend running after you've cloned the main repository.
+
+**1. Switch to the Correct Branch:**
+   (Make sure you are in the main repository folder, NOT the 'frontend' folder yet)
+   ```bash
+   git checkout frontend-dev
+   git pull origin frontend-dev
+
+cd frontend
+
+npm install
+
+npm run dev
+
+Open in Browser:
+Go to: http://localhost:3000 (or whatever URL the terminal shows)
