@@ -1,8 +1,20 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { DollarSign, PieChart, BarChart2, PlusCircle, TrendingUp, Leaf, Edit2, Trash2 } from 'lucide-react';
+import { Pie } from 'react-chartjs-2';
 import styles from './Budgeting.module.css';
 import { analyzeText } from '@/services/api';
 import Image from 'next/image';
+
+// Consistent spending data across the application
+const INITIAL_CATEGORIES = [
+  { id: 1, name: 'Housing', budget: 1200, spent: 1150, progress: 96 },
+  { id: 2, name: 'Food', budget: 450, spent: 350, progress: 78 },
+  { id: 3, name: 'Transportation', budget: 300, spent: 275, progress: 92 },
+  { id: 4, name: 'Entertainment', budget: 150, spent: 80, progress: 53 },
+  { id: 5, name: 'Utilities', budget: 200, spent: 190, progress: 95 },
+  { id: 6, name: 'Education', budget: 300, spent: 300, progress: 100 },
+];
 
 export default function BudgetingPage() {
   const [selectedText, setSelectedText] = useState('');
@@ -13,6 +25,120 @@ export default function BudgetingPage() {
   const [analysis, setAnalysis] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [categories, setCategories] = useState(INITIAL_CATEGORIES);
+  const [editingCategory, setEditingCategory] = useState(null);
+  const [newCategory, setNewCategory] = useState({
+    name: '',
+    budget: '',
+    spent: '0'
+  });
+  const [isAddingNew, setIsAddingNew] = useState(false);
+  const [activeView, setActiveView] = useState('list'); // 'list', 'pie', 'bar'
+
+  const totalBudget = categories.reduce((sum, cat) => sum + cat.budget, 0);
+  const totalSpent = categories.reduce((sum, cat) => sum + cat.spent, 0);
+  const remainingBudget = totalBudget - totalSpent;
+
+  // Prepare chart data
+  const pieChartData = {
+    labels: categories.map(cat => cat.name),
+    datasets: [
+      {
+        data: categories.map(cat => cat.budget),
+        backgroundColor: [
+          'rgba(46, 164, 79, 0.7)',
+          'rgba(254, 161, 21, 0.7)',
+          'rgba(56, 148, 198, 0.7)',
+          'rgba(201, 79, 79, 0.7)',
+          'rgba(159, 108, 239, 0.7)',
+          'rgba(250, 176, 5, 0.7)'
+        ],
+        borderColor: [
+          'rgba(46, 164, 79, 1)',
+          'rgba(254, 161, 21, 1)',
+          'rgba(56, 148, 198, 1)',
+          'rgba(201, 79, 79, 1)',
+          'rgba(159, 108, 239, 1)',
+          'rgba(250, 176, 5, 1)'
+        ],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const barChartData = {
+    labels: categories.map(cat => cat.name),
+    datasets: [
+      {
+        label: 'Budget',
+        data: categories.map(cat => cat.budget),
+        backgroundColor: 'rgba(46, 164, 79, 0.7)',
+        borderColor: 'rgba(46, 164, 79, 1)',
+        borderWidth: 1,
+      },
+      {
+        label: 'Spent',
+        data: categories.map(cat => cat.spent),
+        backgroundColor: 'rgba(254, 161, 21, 0.7)',
+        borderColor: 'rgba(254, 161, 21, 1)',
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          usePointStyle: true,
+          boxWidth: 10,
+          font: {
+            size: 12
+          },
+          padding: 15
+        }
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            const label = context.label || '';
+            const value = context.raw || 0;
+            return `${label}: $${value}`;
+          }
+        }
+      }
+    }
+  };
+
+  const barOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'bottom',
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            const label = context.dataset.label || '';
+            const value = context.raw || 0;
+            return `${label}: $${value}`;
+          }
+        }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: function(value) {
+            return '$' + value;
+          }
+        }
+      }
+    }
+  };
 
   useEffect(() => {
     const handleSelection = () => {
@@ -98,95 +224,418 @@ export default function BudgetingPage() {
     setError(null);
   };
 
+  // Handle adding a new category
+  const handleAddCategory = () => {
+    if (!newCategory.name || !newCategory.budget) return;
+
+    const budget = parseFloat(newCategory.budget);
+    const spent = parseFloat(newCategory.spent || 0);
+    const progress = budget > 0 ? Math.round((spent / budget) * 100) : 0;
+
+    const newCategoryObj = {
+      id: categories.length > 0 ? Math.max(...categories.map(c => c.id)) + 1 : 1,
+      name: newCategory.name,
+      budget,
+      spent,
+      progress
+    };
+
+    setCategories([...categories, newCategoryObj]);
+    setNewCategory({ name: '', budget: '', spent: '0' });
+    setIsAddingNew(false);
+  };
+
+  // Handle category update
+  const handleUpdateCategory = () => {
+    if (!editingCategory || !editingCategory.name || !editingCategory.budget) return;
+
+    const budget = parseFloat(editingCategory.budget);
+    const spent = parseFloat(editingCategory.spent || 0);
+    const progress = budget > 0 ? Math.round((spent / budget) * 100) : 0;
+
+    const updatedCategoryObj = {
+      ...editingCategory,
+      budget,
+      spent,
+      progress
+    };
+
+    setCategories(categories.map(cat => cat.id === editingCategory.id ? updatedCategoryObj : cat));
+    setEditingCategory(null);
+  };
+
+  // Handle category delete
+  const handleDeleteCategory = (id) => {
+    setCategories(categories.filter(cat => cat.id !== id));
+    if (editingCategory && editingCategory.id === id) {
+      setEditingCategory(null);
+    }
+  };
+
+  // Get progress color
+  const getProgressColor = (progress) => {
+    if (progress <= 70) return 'bg-green-500';
+    if (progress <= 90) return 'bg-yellow-500';
+    return 'bg-red-500';
+  };
+
   return (
-    <div className={styles.container}>
-      <nav className={styles.nav}>
-        <a href="/budgeting">Home</a>
-        <a href="/income">Income</a>
-        <a href="/debt">Debt</a>
-        <a href="/investment">Investment</a>
-        <a href="/savings">Savings</a>
-        <div className={styles.dropdown}>
-          <a href="#">Advanced Topics</a>
-          <div className={styles.dropdownContent}>
-            <a href="/taxes">Taxes</a>
-            <a href="/insurance">Insurance</a>
-            <a href="/credit">Credit</a>
+    <div className="p-6 pb-20">
+      <h1 className="page-title flex items-center">
+        <span className="text-green-500 mr-2">💰</span>
+        Budget Management
+      </h1>
+
+      {/* Budget Overview */}
+      <div className="card hover:border-green-200 mb-8">
+        <h2 className="text-xl font-semibold text-green-800 mb-6 flex items-center">
+          <DollarSign size={20} className="text-green-600 mr-2" />
+          Budget Overview
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
+          <div className="bg-green-50 rounded-lg p-4 text-center">
+            <p className="text-gray-600 text-sm mb-1">Total Budget</p>
+            <p className="text-2xl font-bold text-green-700">${totalBudget.toLocaleString()}</p>
+            <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+              <div className="bg-green-500 h-2 rounded-full" style={{ width: '100%' }}></div>
+            </div>
+          </div>
+          
+          <div className="bg-amber-50 rounded-lg p-4 text-center">
+            <p className="text-gray-600 text-sm mb-1">Total Spent</p>
+            <p className="text-2xl font-bold text-amber-600">${totalSpent.toLocaleString()}</p>
+            <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+              <div className="bg-amber-500 h-2 rounded-full" style={{ width: `${(totalSpent / totalBudget) * 100}%` }}></div>
+            </div>
+          </div>
+          
+          <div className="bg-blue-50 rounded-lg p-4 text-center">
+            <p className="text-gray-600 text-sm mb-1">Remaining</p>
+            <p className="text-2xl font-bold text-blue-600">${remainingBudget.toLocaleString()}</p>
+            <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+              <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${(remainingBudget / totalBudget) * 100}%` }}></div>
+            </div>
           </div>
         </div>
-      </nav>
+      </div>
 
-      <header className={styles.header}>
-        <h1>What is Budgeting?</h1>
-        <p>Learn the basics of budgeting and how it can help you take control of your financial future.</p>
-      </header>
+      {/* View Toggle and Add Button */}
+      <div className="flex justify-between items-center mb-6">
+        <div className="bg-white rounded-lg border border-gray-200 p-1 inline-flex">
+          <button 
+            onClick={() => setActiveView('list')} 
+            className={`px-3 py-1.5 text-sm rounded-md flex items-center ${activeView === 'list' ? 'bg-green-100 text-green-700' : 'text-gray-600 hover:bg-gray-100'}`}
+          >
+            <BarChart2 size={16} className="mr-1" />
+            List
+          </button>
+          <button 
+            onClick={() => setActiveView('pie')} 
+            className={`px-3 py-1.5 text-sm rounded-md flex items-center ${activeView === 'pie' ? 'bg-green-100 text-green-700' : 'text-gray-600 hover:bg-gray-100'}`}
+          >
+            <PieChart size={16} className="mr-1" />
+            Pie Chart
+          </button>
+          <button 
+            onClick={() => setActiveView('bar')} 
+            className={`px-3 py-1.5 text-sm rounded-md flex items-center ${activeView === 'bar' ? 'bg-green-100 text-green-700' : 'text-gray-600 hover:bg-gray-100'}`}
+          >
+            <TrendingUp size={16} className="mr-1" />
+            Bar Chart
+          </button>
+        </div>
+        
+        <button 
+          onClick={() => setIsAddingNew(true)} 
+          className="btn-primary btn-sm flex items-center"
+          disabled={isAddingNew || editingCategory}
+        >
+          <PlusCircle size={16} className="mr-1" />
+          Add Category
+        </button>
+      </div>
 
-      <section className={`${styles.section} selectableText`} id="budgeting">
-        <h2>What is Budgeting?</h2>
-        <p>Budgeting is the process of planning how to spend your money. It involves creating a goal and allocating specific amounts of your income to pay your expenses while meeting your financial goal. By making a conscious plan for where your money will go before you spend it, budgeting helps you manage your finances effectively and achieve your financial goals.</p>
-        <Image
-          src="/images/budgeting-concept.jpg"
-          alt="Budgeting concept"
-          width={600}
-          height={400}
-          className={styles.image}
-        />
-      </section>
+      {/* Add New Category Form */}
+      {isAddingNew && (
+        <div className="card hover:border-green-200 mb-6 border-green-300 bg-green-50/30">
+          <h3 className="font-semibold text-green-800 mb-4">Add New Category</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Category Name</label>
+              <input
+                type="text"
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                placeholder="e.g., Entertainment"
+                value={newCategory.name}
+                onChange={(e) => setNewCategory({...newCategory, name: e.target.value})}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Budget Amount</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <DollarSign size={16} className="text-gray-400" />
+                </div>
+                <input
+                  type="number"
+                  className="w-full pl-10 p-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                  placeholder="0.00"
+                  value={newCategory.budget}
+                  onChange={(e) => setNewCategory({...newCategory, budget: e.target.value})}
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Current Spent (optional)</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <DollarSign size={16} className="text-gray-400" />
+                </div>
+                <input
+                  type="number"
+                  className="w-full pl-10 p-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                  placeholder="0.00"
+                  value={newCategory.spent}
+                  onChange={(e) => setNewCategory({...newCategory, spent: e.target.value})}
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-end mt-4 space-x-2">
+            <button
+              onClick={() => setIsAddingNew(false)}
+              className="px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleAddCategory}
+              className="btn-primary btn-sm"
+              disabled={!newCategory.name || !newCategory.budget}
+            >
+              Add Category
+            </button>
+          </div>
+        </div>
+      )}
 
-      <section className={`${styles.section} selectableText`} id="why-budgeting">
-        <h2>Why is Budgeting Important?</h2>
-        <p>One of the most significant benefits of budgeting is that it prevents you from living paycheck to paycheck. Without a clear plan, it's easy to spend impulsively and end up with no savings. By budgeting your income and expenses, you create a buffer that helps you manage your money and avoid financial stress.</p>
-        <p>Planning your spending ensures that you're not scrambling for money when bills are due or relying on credit to get by. Additionally, that money spent can be put towards more meaningful contributions such as emergency funds, investment plans, or paying off debt.</p>
-        <Image
-          src="/images/budgeting-chart.jpg"
-          alt="Important budgeting chart"
-          width={600}
-          height={400}
-          className={styles.image}
-        />
-      </section>
+      {/* Edit Category Form */}
+      {editingCategory && (
+        <div className="card hover:border-green-200 mb-6 border-amber-300 bg-amber-50/30">
+          <h3 className="font-semibold text-amber-800 mb-4">Edit Category</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Category Name</label>
+              <input
+                type="text"
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-amber-500 focus:border-amber-500"
+                placeholder="e.g., Entertainment"
+                value={editingCategory.name}
+                onChange={(e) => setEditingCategory({...editingCategory, name: e.target.value})}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Budget Amount</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <DollarSign size={16} className="text-gray-400" />
+                </div>
+                <input
+                  type="number"
+                  className="w-full pl-10 p-2 border border-gray-300 rounded-md focus:ring-amber-500 focus:border-amber-500"
+                  placeholder="0.00"
+                  value={editingCategory.budget}
+                  onChange={(e) => setEditingCategory({...editingCategory, budget: e.target.value})}
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Current Spent</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <DollarSign size={16} className="text-gray-400" />
+                </div>
+                <input
+                  type="number"
+                  className="w-full pl-10 p-2 border border-gray-300 rounded-md focus:ring-amber-500 focus:border-amber-500"
+                  placeholder="0.00"
+                  value={editingCategory.spent}
+                  onChange={(e) => setEditingCategory({...editingCategory, spent: e.target.value})}
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-end mt-4 space-x-2">
+            <button
+              onClick={() => setEditingCategory(null)}
+              className="px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleUpdateCategory}
+              className="btn-primary btn-sm"
+              disabled={!editingCategory.name || !editingCategory.budget}
+            >
+              Update Category
+            </button>
+          </div>
+        </div>
+      )}
 
-      <section className={`${styles.section} selectableText`} id="investment">
-        <h2>The Power of Redirecting Your Income</h2>
-        <p>Redirecting your income into investments rather than spending it on leisure expenses can have a profound impact on your long-term financial security. While enjoying life's pleasures is important, the power of investing lies in its ability to grow your money over time, setting you up for future financial freedom.</p>
-        <p>By consistently putting a portion of your income into investments—whether it's a retirement fund, stocks, or real estate—you're allowing your money to work for you, creating a growing source of wealth that compounds over the years.</p>
-        <Image
-          src="/images/investment-chart.jpg"
-          alt="Investment growth chart"
-          width={600}
-          height={400}
-          className={styles.image}
-        />
-      </section>
+      {/* List View */}
+      {activeView === 'list' && (
+        <div className="card hover:border-green-200">
+          <h2 className="text-xl font-semibold text-green-800 mb-4 flex items-center">
+            <Leaf size={20} className="text-green-600 mr-2" />
+            Budget Categories
+          </h2>
+          
+          <div className="overflow-x-auto">
+            <table className="min-w-full">
+              <thead className="bg-green-50 border-b border-green-100">
+                <tr>
+                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Category</th>
+                  <th className="py-3 px-4 text-right text-xs font-medium text-gray-600 uppercase tracking-wider">Budget</th>
+                  <th className="py-3 px-4 text-right text-xs font-medium text-gray-600 uppercase tracking-wider">Spent</th>
+                  <th className="py-3 px-4 text-center text-xs font-medium text-gray-600 uppercase tracking-wider">Progress</th>
+                  <th className="py-3 px-4 text-center text-xs font-medium text-gray-600 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {categories.map((category) => (
+                  <tr key={category.id} className="hover:bg-green-50/30">
+                    <td className="py-3 px-4">
+                      <div className="font-medium text-gray-900">{category.name}</div>
+                    </td>
+                    <td className="py-3 px-4 text-right font-medium">${category.budget.toLocaleString()}</td>
+                    <td className="py-3 px-4 text-right font-medium">${category.spent.toLocaleString()}</td>
+                    <td className="py-3 px-4">
+                      <div className="flex items-center">
+                        <div className="flex-1 h-2 bg-gray-200 rounded-full mx-2">
+                          <div 
+                            className={`h-2 rounded-full ${getProgressColor(category.progress)}`}
+                            style={{ width: `${Math.min(category.progress, 100)}%` }}
+                          ></div>
+                        </div>
+                        <span className={`text-xs font-medium ${category.progress > 90 ? 'text-red-600' : 'text-gray-600'}`}>
+                          {category.progress}%
+                        </span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 text-center">
+                      <div className="flex justify-center space-x-2">
+                        <button 
+                          onClick={() => setEditingCategory(category)}
+                          className="text-blue-600 hover:text-blue-800 p-1"
+                          disabled={isAddingNew || editingCategory}
+                        >
+                          <Edit2 size={16} />
+                        </button>
+                        <button 
+                          onClick={() => handleDeleteCategory(category.id)}
+                          className="text-red-600 hover:text-red-800 p-1"
+                          disabled={isAddingNew || editingCategory}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          
+          {categories.length === 0 && (
+            <div className="text-center py-8 text-gray-500">
+              No budget categories found. Create one to get started!
+            </div>
+          )}
+        </div>
+      )}
 
-      <section className={`${styles.section} selectableText`} id="budgeting-dynamic">
-        <h2>Budgeting is Dynamic</h2>
-        <p>As life changes—whether it's a new job, an unexpected expense, or a change in your financial goals—your budget should be adjusted accordingly. Regularly reviewing and tweaking your budget ensures that it continues to reflect your current financial situation. If you struggle to meet your goals, it's important to evaluate and adjust your budget to work better for you. Remember, a budget exists to help you!</p>
-        <Image
-          src="/images/dynamic-budgeting.jpg"
-          alt="Dynamic budgeting"
-          width={600}
-          height={400}
-          className={styles.image}
-        />
-      </section>
+      {/* Pie Chart View */}
+      {activeView === 'pie' && (
+        <div className="card hover:border-green-200">
+          <h2 className="text-xl font-semibold text-green-800 mb-4 flex items-center">
+            <PieChart size={20} className="text-green-600 mr-2" />
+            Budget Allocation
+          </h2>
+          
+          <div className="h-96">
+            {categories.length > 0 ? (
+              <Pie data={pieChartData} options={chartOptions} />
+            ) : (
+              <div className="flex items-center justify-center h-full text-gray-500">
+                No budget categories found to display chart.
+              </div>
+            )}
+          </div>
+          
+          <div className="text-center text-sm text-gray-600 mt-4">
+            Visualizing how your budget is allocated across different categories
+          </div>
+        </div>
+      )}
 
-      <section className={`${styles.section} selectableText`} id="next-steps">
-        <h2>Next Steps</h2>
-        <p>With a budget in place, a set amount of money should be set aside for addressing debts, savings, and investments. Again, a budget varies person to person. One person may put all of this money towards debt, while another may choose to focus on building an emergency fund.</p>
-        <p>It is important to have an understanding of how addressing debt, creating emergency funds, and investing each contribute toward a long-term financial plan.</p>
-        <Image
-          src="/images/financial-planning.jpg"
-          alt="Financial planning"
-          width={600}
-          height={400}
-          className={styles.image}
-        />
-      </section>
+      {/* Bar Chart View */}
+      {activeView === 'bar' && (
+        <div className="card hover:border-green-200">
+          <h2 className="text-xl font-semibold text-green-800 mb-4 flex items-center">
+            <BarChart2 size={20} className="text-green-600 mr-2" />
+            Budget vs. Spending
+          </h2>
+          
+          <div className="h-96">
+            {categories.length > 0 ? (
+              <Pie data={barChartData} options={barOptions} />
+            ) : (
+              <div className="flex items-center justify-center h-full text-gray-500">
+                No budget categories found to display chart.
+              </div>
+            )}
+          </div>
+          
+          <div className="text-center text-sm text-gray-600 mt-4">
+            Comparing your budgeted amounts with actual spending for each category
+          </div>
+        </div>
+      )}
 
-      <footer className={styles.footer}>
-        <p>For more information, visit our <a href="#">Personal Finance Guide</a>.</p>
-      </footer>
+      {/* Tips for Budgeting */}
+      <div className="mt-8">
+        <h2 className="text-xl font-semibold text-green-800 mb-4 flex items-center">
+          <Leaf size={20} className="text-green-600 mr-2" />
+          Budgeting Tips
+        </h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="card hover:border-green-200 bg-green-50/30">
+            <h3 className="font-medium text-green-800 mb-2">50/30/20 Rule</h3>
+            <p className="text-sm text-gray-600">Allocate 50% of your income to needs, 30% to wants, and 20% to savings.</p>
+          </div>
+          
+          <div className="card hover:border-green-200 bg-amber-50/30">
+            <h3 className="font-medium text-amber-800 mb-2">Track Your Spending</h3>
+            <p className="text-sm text-gray-600">Regularly update your spending to get a clear picture of your financial habits.</p>
+          </div>
+          
+          <div className="card hover:border-green-200 bg-blue-50/30">
+            <h3 className="font-medium text-blue-800 mb-2">Adjust When Needed</h3>
+            <p className="text-sm text-gray-600">Budgets aren't set in stone. Revise yours as your financial situation changes.</p>
+          </div>
+        </div>
+      </div>
 
       {showSubmitButton && (
         <button

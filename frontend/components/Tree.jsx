@@ -107,14 +107,6 @@ const Tree = ({ progress }) => {
         <p className="text-green-800 font-medium">
           {progress}% Complete
         </p>
-        <p className="text-sm text-green-600 mt-1">
-          {progress < 20 && "Just planted! Keep saving to help it grow."}
-          {progress >= 20 && progress < 40 && "Your seedling is sprouting! Keep going!"}
-          {progress >= 40 && progress < 60 && "Growing steadily! You're making good progress."}
-          {progress >= 60 && progress < 80 && "Your tree is growing taller! Getting closer!"}
-          {progress >= 80 && progress < 100 && "Almost fully grown! Just a little more!"}
-          {progress >= 100 && "Congratulations! Your tree is flourishing!"}
-        </p>
       </div>
     </div>
   );

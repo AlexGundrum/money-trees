@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Leaf, Calendar, Clock, CheckCircle, Award, TrendingUp, Target } from 'lucide-react';
 import Link from 'next/link';
+import Tree from '@/components/Tree';
 
 export default function ForestPage() {
   const [achievements, setAchievements] = useState([
@@ -27,22 +28,6 @@ export default function ForestPage() {
   const totalSpent = categories.reduce((sum, cat) => sum + cat.spent, 0);
   const totalRemaining = totalBudget - totalSpent;
 
-  // Tree growth levels based on percentage of budget used
-  const getTreeSize = (progress) => {
-    if (progress <= 30) return 'seedling';
-    if (progress <= 60) return 'sapling';
-    if (progress <= 85) return 'growing';
-    return 'mature';
-  };
-  
-  // Get color based on spent/budget ratio
-  const getProgressColor = (spent, budget) => {
-    const ratio = (spent / budget) * 100;
-    if (ratio <= 70) return 'bg-green-500';
-    if (ratio <= 90) return 'bg-yellow-500';
-    return 'bg-red-500';
-  };
-
   return (
     <div className="p-6 pb-20">
       <h1 className="page-title flex items-center">
@@ -59,45 +44,23 @@ export default function ForestPage() {
               <p className="text-sm text-gray-600 mb-6">Watch your forest grow as you manage your budget categories.</p>
               
               {/* Trees Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-6">
                 {categories.map((category) => (
                   <div 
                     key={category.id} 
                     className="relative bg-gradient-to-b from-green-50 to-transparent p-4 rounded-lg text-center"
                   >
-                    <div className="mb-2 h-24 flex justify-center items-end">
-                      {/* Tree visualization based on percentage */}
-                      <div className="relative">
-                        {getTreeSize(category.progress) === 'seedling' && (
-                          <div className="mx-auto w-4 h-8 bg-green-700 rounded-t-full"></div>
-                        )}
-                        {getTreeSize(category.progress) === 'sapling' && (
-                          <>
-                            <div className="mx-auto w-2 h-12 bg-green-700"></div>
-                            <div className="absolute left-1/2 top-3 transform -translate-x-1/2 w-8 h-6 bg-green-500 rounded-full"></div>
-                          </>
-                        )}
-                        {getTreeSize(category.progress) === 'growing' && (
-                          <>
-                            <div className="mx-auto w-3 h-16 bg-green-700"></div>
-                            <div className="absolute left-1/2 top-0 transform -translate-x-1/2 w-12 h-8 bg-green-500 rounded-full"></div>
-                            <div className="absolute left-1/2 top-6 transform -translate-x-1/2 w-10 h-6 bg-green-500 rounded-full"></div>
-                          </>
-                        )}
-                        {getTreeSize(category.progress) === 'mature' && (
-                          <>
-                            <div className="mx-auto w-4 h-20 bg-green-700"></div>
-                            <div className="absolute left-1/2 top-0 transform -translate-x-1/2 w-16 h-10 bg-green-500 rounded-full"></div>
-                            <div className="absolute left-1/2 top-8 transform -translate-x-1/2 w-12 h-6 bg-green-500 rounded-full"></div>
-                            <div className="absolute left-1/2 bottom-1/4 transform -translate-x-1/2 w-8 h-4 bg-green-500 rounded-full"></div>
-                          </>
-                        )}
-                      </div>
+                    <div className="h-28 flex justify-center items-center mb-2">
+                      <Tree progress={category.progress} />
                     </div>
                     <h3 className="font-medium text-green-800 text-sm">{category.name}</h3>
                     <div className="mt-2 w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
                       <div 
-                        className={`h-2.5 rounded-full ${getProgressColor(category.spent, category.budget)}`}
+                        className={`h-2.5 rounded-full ${
+                          category.progress > 95 ? 'bg-red-500' : 
+                          category.progress > 80 ? 'bg-yellow-500' : 
+                          'bg-green-500'
+                        }`}
                         style={{ width: `${category.progress}%` }}
                       ></div>
                     </div>
