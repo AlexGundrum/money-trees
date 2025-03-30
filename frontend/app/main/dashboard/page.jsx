@@ -5,64 +5,133 @@ import { useState, useEffect, useRef } from 'react';
 import {
   Chart as ChartJS,
   ArcElement,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
   Tooltip,
   Legend,
 } from 'chart.js';
-import { Pie } from 'react-chartjs-2';
+import { Pie, Bar } from 'react-chartjs-2';
 import { getAIFinancialAdvice } from '@/services/api';
 import Link from 'next/link';
+import Image from 'next/image';
+import { ArrowUpRight, DollarSign, CreditCard, ShoppingBag, Coffee, Film, Utensils, Home, TrendingUp, BarChart, CheckCircle2, AlertCircle, TrendingDown, MinusIcon } from 'lucide-react';
 import TransactionCategoryChart from '@/components/charts/TransactionCategoryChart';
 import Tree from '@/components/Tree';
+
 ChartJS.register(
   ArcElement,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
   Tooltip,
   Legend
 );
 
-// Mock data for initial development
-
-const mockInsights = {
-  good_habits: [
-    "You're consistently saving 20% of your income!",
-    "Great job on limiting entertainment expenses this month."
+// Consistent spending data across the application
+const SPENDING_DATA = {
+  categories: [
+    { id: 1, name: 'Housing', budget: 1200, spent: 1150, progress: 96, icon: Home, color: 'rgba(209, 73, 91, 0.7)' },
+    { id: 2, name: 'Food', budget: 450, spent: 350, progress: 78, icon: Utensils, color: 'rgba(254, 161, 21, 0.7)' },
+    { id: 3, name: 'Transportation', budget: 300, spent: 275, progress: 92, icon: CreditCard, color: 'rgba(56, 148, 198, 0.7)' },
+    { id: 4, name: 'Entertainment', budget: 150, spent: 80, progress: 53, icon: Film, color: 'rgba(128, 90, 213, 0.7)' },
+    { id: 5, name: 'Utilities', budget: 200, spent: 190, progress: 95, icon: Home, color: 'rgba(22, 135, 167, 0.7)' },
+    { id: 6, name: 'Education', budget: 300, spent: 300, progress: 100, icon: CreditCard, color: 'rgba(244, 195, 27, 0.7)' },
   ],
-  bad_habits: [
-    "Consider reducing your dining out expenses.",
-    "Watch out for frequent small purchases at convenience stores."
-  ]
+  savings: { budget: 520, spent: 520, progress: 100, color: 'rgba(46, 164, 79, 0.7)' },
+  total: { budget: 3120, income: 3120 }
 };
 
-// Forest-themed color palette for the pie chart
-const forestColors = {
-  bg: [
-    "rgba(46, 164, 79, 0.7)",    // Green - Savings
-    "rgba(209, 73, 91, 0.7)",    // Red - Housing
-    "rgba(254, 161, 21, 0.7)",   // Orange - Food
-    "rgba(56, 148, 198, 0.7)",   // Blue - Transportation
-    "rgba(128, 90, 213, 0.7)",   // Purple - Entertainment
-    "rgba(22, 135, 167, 0.7)",   // Teal - Utilities
-    "rgba(244, 195, 27, 0.7)",   // Yellow - Education
-  ],
-  border: [
-    "rgba(46, 164, 79, 1)",      // Green
-    "rgba(209, 73, 91, 1)",      // Red
-    "rgba(254, 161, 21, 1)",     // Orange
-    "rgba(56, 148, 198, 1)",     // Blue
-    "rgba(128, 90, 213, 1)",     // Purple
-    "rgba(22, 135, 167, 1)",     // Teal
-    "rgba(244, 195, 27, 1)",     // Yellow
-  ]
-};
+// Recent transactions data
+const RECENT_TRANSACTIONS = [
+  { 
+    id: 1, 
+    date: '2023-05-15', 
+    merchant: 'Netflix', 
+    amount: 14.99, 
+    category: 'Entertainment',
+    logo: '/logos/netflix.png',
+    iconFallback: Film 
+  },
+  { 
+    id: 2, 
+    date: '2023-05-14', 
+    merchant: 'Amazon', 
+    amount: 67.84, 
+    category: 'Shopping',
+    logo: '/logos/amazon.png',
+    iconFallback: ShoppingBag
+  },
+  { 
+    id: 3, 
+    date: '2023-05-13', 
+    merchant: 'Starbucks', 
+    amount: 6.45, 
+    category: 'Food',
+    logo: '/logos/starbucks.png',
+    iconFallback: Coffee
+  },
+  { 
+    id: 4, 
+    date: '2023-05-12', 
+    merchant: 'Uber', 
+    amount: 24.30, 
+    category: 'Transportation',
+    logo: '/logos/uber.png',
+    iconFallback: CreditCard
+  },
+  { 
+    id: 5, 
+    date: '2023-05-11', 
+    merchant: 'Rent', 
+    amount: 1200.00, 
+    category: 'Housing',
+    logo: '/logos/rent.png',
+    iconFallback: Home
+  },
+  { 
+    id: 6, 
+    date: '2023-05-10', 
+    merchant: 'Electric Bill', 
+    amount: 85.63, 
+    category: 'Utilities',
+    logo: '/logos/electricity.png',
+    iconFallback: Home
+  },
+];
 
-// Mock spending data for pie chart
-const spendingData = {
-  labels: ["Savings", "Housing", "Food", "Transportation", "Entertainment", "Utilities", "Education"],
+// Prepare pie chart data using the consistent data
+const pieChartData = {
+  labels: [...SPENDING_DATA.categories.map(cat => cat.name), "Savings"],
   datasets: [
     {
       label: "Monthly Budget Allocation ($)",
-      data: [520, 1200, 450, 300, 150, 200, 300],
-      backgroundColor: forestColors.bg,
-      borderColor: forestColors.border,
+      data: [...SPENDING_DATA.categories.map(cat => cat.budget), SPENDING_DATA.savings.budget],
+      backgroundColor: [...SPENDING_DATA.categories.map(cat => cat.color), SPENDING_DATA.savings.color],
+      borderColor: [...SPENDING_DATA.categories.map(cat => cat.color.replace('0.7', '1')), SPENDING_DATA.savings.color.replace('0.7', '1')],
+      borderWidth: 1,
+    },
+  ],
+};
+
+// Bar chart data for monthly spending
+const barChartData = {
+  labels: SPENDING_DATA.categories.map(cat => cat.name),
+  datasets: [
+    {
+      label: 'Budget',
+      data: SPENDING_DATA.categories.map(cat => cat.budget),
+      backgroundColor: 'rgba(46, 164, 79, 0.6)',
+      borderColor: 'rgba(46, 164, 79, 1)',
+      borderWidth: 1,
+    },
+    {
+      label: 'Spent',
+      data: SPENDING_DATA.categories.map(cat => cat.spent),
+      backgroundColor: 'rgba(254, 161, 21, 0.6)',
+      borderColor: 'rgba(254, 161, 21, 1)',
       borderWidth: 1,
     },
   ],
@@ -119,19 +188,134 @@ const pieOptions = {
   }
 };
 
-// Optional: Add metadata specific to this page
-// export const metadata = {
-//   title: 'Dashboard - FinStudent',
-// };
+const barOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  scales: {
+    x: {
+      grid: {
+        display: false,
+      },
+    },
+    y: {
+      beginAtZero: true,
+      grid: {
+        color: 'rgba(0, 0, 0, 0.05)',
+      },
+    },
+  },
+  plugins: {
+    legend: {
+      position: 'top',
+      labels: {
+        usePointStyle: true,
+        boxWidth: 10,
+        font: {
+          size: 12,
+          family: "'Inter', sans-serif"
+        },
+        padding: 15,
+        color: '#2c3e50'
+      }
+    },
+    title: {
+      display: true,
+      text: 'Budget vs. Spending by Category',
+      font: {
+        size: 16,
+        family: "'Inter', sans-serif",
+        weight: 'bold',
+        color: '#2c3e50'
+      },
+      padding: 20
+    }
+  }
+};
+
+const mockInsights = {
+  good_habits: [
+    "You're consistently saving 17% of your income!",
+    "Great job on limiting entertainment expenses this month."
+  ],
+  bad_habits: [
+    "Consider reducing your dining out expenses.",
+    "Watch out for frequent small purchases at convenience stores."
+  ]
+};
+
+// Category details for when a category is selected
+const getCategoryDetails = (index) => {
+  if (index === null) return null;
+  
+  const categories = {
+    0: { // Housing
+      title: "Housing Breakdown",
+      items: [
+        { label: "Rent/Mortgage", amount: 1000 },
+        { label: "Insurance", amount: 100 },
+        { label: "Property Tax", amount: 50 },
+      ]
+    },
+    1: { // Food
+      title: "Food Breakdown",
+      items: [
+        { label: "Groceries", amount: 250 },
+        { label: "Dining Out", amount: 100 },
+      ]
+    },
+    2: { // Transportation
+      title: "Transportation Breakdown",
+      items: [
+        { label: "Gas", amount: 150 },
+        { label: "Public Transit", amount: 75 },
+        { label: "Car Maintenance", amount: 50 },
+      ]
+    },
+    3: { // Entertainment
+      title: "Entertainment Breakdown",
+      items: [
+        { label: "Streaming Services", amount: 30 },
+        { label: "Movies/Events", amount: 50 },
+      ]
+    },
+    4: { // Utilities
+      title: "Utilities Breakdown",
+      items: [
+        { label: "Electricity", amount: 90 },
+        { label: "Water", amount: 40 },
+        { label: "Internet", amount: 60 },
+      ]
+    },
+    5: { // Education
+      title: "Education Breakdown",
+      items: [
+        { label: "Tuition", amount: 200 },
+        { label: "Books", amount: 50 },
+        { label: "Online Courses", amount: 50 },
+      ]
+    },
+    6: { // Savings
+      title: "Savings Breakdown",
+      items: [
+        { label: "Emergency Fund", amount: 300 },
+        { label: "Car Fund", amount: 150 },
+        { label: "Vacation Fund", amount: 70 },
+      ]
+    },
+  };
+  
+  return categories[index] || null;
+};
 
 export default function DashboardPage() {
   const [insights, setInsights] = useState(mockInsights);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [chartData, setChartData] = useState(spendingData);
+  const [chartData, setChartData] = useState(pieChartData);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const lastFetchRef = useRef(0);
   const [activeTab, setActiveTab] = useState('overview');
+  const [recentTransactions, setRecentTransactions] = useState(RECENT_TRANSACTIONS);
 
   useEffect(() => {
     const fetchInsights = async () => {
@@ -161,12 +345,12 @@ export default function DashboardPage() {
   const handleCategorySelect = (index) => {
     if (selectedCategory === index) {
       setSelectedCategory(null);
-      setChartData(spendingData); // Reset to original data
+      setChartData(pieChartData); // Reset to original data
     } else {
       setSelectedCategory(index);
       
       // Make a copy of the chart data
-      const newData = JSON.parse(JSON.stringify(spendingData));
+      const newData = JSON.parse(JSON.stringify(pieChartData));
       
       // Update background colors to highlight the selected category
       const newBackgroundColors = [...newData.datasets[0].backgroundColor];
@@ -181,121 +365,81 @@ export default function DashboardPage() {
     }
   };
 
-  const llm_data = {
-    "financial_analysis_request": {
-      "time_period": "Current Month",
-      "total_spending": 2600,
-      "currency": "USD",
-      "categories": [
-        {"name": "Housing", "total": 1200},
-        {"name": "Food", "total": 450},
-        {"name": "Transportation", "total": 300},
-        {"name": "Entertainment", "total": 150},
-        {"name": "Utilities", "total": 200},
-        {"name": "Education", "total": 300}
-      ],
-      "income": 3120,
-      "savings_goal": 2000,
-      "current_savings": 600
-    }
-  };
-  
-  // Category details for when a category is selected
-  const getCategoryDetails = (index) => {
-    if (index === null) return null;
-    
-    const categories = {
-      0: { // Savings
-        title: "Savings Breakdown",
-        items: [
-          { label: "Emergency Fund", amount: 300 },
-          { label: "Car Fund", amount: 150 },
-          { label: "Vacation Fund", amount: 70 },
-        ]
-      },
-      1: { // Housing
-        title: "Housing Breakdown",
-        items: [
-          { label: "Rent/Mortgage", amount: 1000 },
-          { label: "Insurance", amount: 100 },
-          { label: "Property Tax", amount: 100 },
-        ]
-      },
-      2: { // Food
-        title: "Food Breakdown",
-        items: [
-          { label: "Groceries", amount: 300 },
-          { label: "Dining Out", amount: 150 },
-        ]
-      },
-      3: { // Transportation
-        title: "Transportation Breakdown",
-        items: [
-          { label: "Gas", amount: 150 },
-          { label: "Public Transit", amount: 100 },
-          { label: "Car Maintenance", amount: 50 },
-        ]
-      },
-      4: { // Entertainment
-        title: "Entertainment Breakdown",
-        items: [
-          { label: "Streaming Services", amount: 50 },
-          { label: "Movies/Events", amount: 70 },
-          { label: "Hobbies", amount: 30 },
-        ]
-      },
-      5: { // Utilities
-        title: "Utilities Breakdown",
-        items: [
-          { label: "Electricity", amount: 80 },
-          { label: "Water", amount: 40 },
-          { label: "Internet", amount: 60 },
-          { label: "Phone", amount: 20 },
-        ]
-      },
-      6: { // Education
-        title: "Education Breakdown",
-        items: [
-          { label: "Tuition", amount: 200 },
-          { label: "Books", amount: 50 },
-          { label: "Online Courses", amount: 50 },
-        ]
-      },
-    };
-    
-    return categories[index] || null;
-  };
-
-  const overallProgress = 75; // Placeholder for overall progress
-  const savingsProgress = Math.round((llm_data.financial_analysis_request.current_savings / llm_data.financial_analysis_request.savings_goal) * 100);
-
   return (
     <div className="p-6 pb-20">
-      <div className="flex justify-between items-center">
-        <h1 className="page-title flex items-center">
-          <span className="text-green-500 mr-2">🏡</span>
-          Your Financial Forest
-        </h1>
-        <div className="bg-green-50 rounded-lg overflow-hidden flex shadow-sm border border-green-100">
-          <button 
-            className={`px-4 py-2 text-sm font-medium ${activeTab === 'overview' ? 'bg-green-600 text-white' : 'text-green-700 hover:bg-green-100'}`}
+      <h1 className="page-title flex items-center">
+        <span className="text-green-500 mr-2">🌱</span>
+        Your Financial Forest
+      </h1>
+      
+      {/* Tabs Navigation */}
+      <div className="mb-6 border-b border-gray-200">
+        <div className="flex space-x-4">
+          <button
             onClick={() => setActiveTab('overview')}
+            className={`py-2 px-4 font-medium text-sm transition-colors duration-200 ${
+              activeTab === 'overview'
+                ? 'text-green-600 border-b-2 border-green-500'
+                : 'text-gray-500 hover:text-green-500'
+            }`}
           >
-            Overview
+            <div className="flex items-center">
+              <BarChart size={16} className="mr-1" />
+              Overview
+            </div>
           </button>
-          <button 
-            className={`px-4 py-2 text-sm font-medium ${activeTab === 'insights' ? 'bg-green-600 text-white' : 'text-green-700 hover:bg-green-100'}`}
+          <button
             onClick={() => setActiveTab('insights')}
+            className={`py-2 px-4 font-medium text-sm transition-colors duration-200 ${
+              activeTab === 'insights'
+                ? 'text-green-600 border-b-2 border-green-500'
+                : 'text-gray-500 hover:text-green-500'
+            }`}
           >
-            Insights
+            <div className="flex items-center">
+              <TrendingUp size={16} className="mr-1" />
+              Insights
+            </div>
           </button>
         </div>
       </div>
-
+      
       {activeTab === 'overview' ? (
         <>
+          {/* Top Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div className="card hover:border-green-200 flex flex-col">
+              <p className="text-gray-600 text-xs mb-1">Monthly Income</p>
+              <p className="text-xl font-semibold text-green-700">${SPENDING_DATA.total.income.toLocaleString()}</p>
+              <div className="w-full h-1 bg-green-100 rounded mt-2">
+                <div className="bg-green-500 h-1 rounded" style={{ width: '100%' }}></div>
+              </div>
+            </div>
+            <div className="card hover:border-green-200 flex flex-col">
+              <p className="text-gray-600 text-xs mb-1">Total Spent</p>
+              <p className="text-xl font-semibold text-amber-600">${SPENDING_DATA.categories.reduce((sum, cat) => sum + cat.spent, 0).toLocaleString()}</p>
+              <div className="w-full h-1 bg-amber-100 rounded mt-2">
+                <div className="bg-amber-500 h-1 rounded" style={{ width: `${(SPENDING_DATA.categories.reduce((sum, cat) => sum + cat.spent, 0) / SPENDING_DATA.total.budget) * 100}%` }}></div>
+              </div>
+            </div>
+            <div className="card hover:border-green-200 flex flex-col">
+              <p className="text-gray-600 text-xs mb-1">Savings</p>
+              <p className="text-xl font-semibold text-blue-600">${SPENDING_DATA.savings.spent.toLocaleString()}</p>
+              <div className="w-full h-1 bg-blue-100 rounded mt-2">
+                <div className="bg-blue-500 h-1 rounded" style={{ width: `${(SPENDING_DATA.savings.spent / SPENDING_DATA.savings.budget) * 100}%` }}></div>
+              </div>
+            </div>
+            <div className="card hover:border-green-200 flex flex-col">
+              <p className="text-gray-600 text-xs mb-1">Remaining</p>
+              <p className="text-xl font-semibold text-green-700">${(SPENDING_DATA.total.income - SPENDING_DATA.categories.reduce((sum, cat) => sum + cat.spent, 0)).toLocaleString()}</p>
+              <div className="w-full h-1 bg-green-100 rounded mt-2">
+                <div className="bg-green-500 h-1 rounded" style={{ width: `${((SPENDING_DATA.total.income - SPENDING_DATA.categories.reduce((sum, cat) => sum + cat.spent, 0)) / SPENDING_DATA.total.income) * 100}%` }}></div>
+              </div>
+            </div>
+          </div>
+
           {/* Financial Growth Visualization */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div className="card hover:border-green-200 relative overflow-hidden">
               <div className="absolute -right-8 -top-8 w-24 h-24 bg-green-50 rounded-full opacity-50"></div>
               <div className="absolute -left-8 -bottom-8 w-20 h-20 bg-green-50 rounded-full opacity-50"></div>
@@ -303,11 +447,11 @@ export default function DashboardPage() {
               <h2 className="text-xl font-semibold text-green-800 mb-3 relative z-10">Financial Growth</h2>
               <div className="p-4 bg-gradient-to-b from-green-50 to-transparent rounded-lg relative z-10">
                 <div className="h-48 flex justify-center">
-                  <Tree progress={overallProgress} />
+                  <Tree progress={SPENDING_DATA.savings.progress} />
                 </div>
               </div>
               <p className="text-center text-sm text-green-600 mt-2 relative z-10">
-                Your financial health is at {overallProgress}% of your goals
+                Your financial health is at {SPENDING_DATA.savings.progress}% of your goals
               </p>
             </div>
             
@@ -318,37 +462,31 @@ export default function DashboardPage() {
               <h2 className="text-xl font-semibold text-green-800 mb-3 relative z-10">Savings Progress</h2>
               <div className="bg-gradient-to-r from-green-50 to-amber-50 rounded-lg p-5 mb-4 relative z-10">
                 <div className="flex justify-between text-sm mb-1">
-                  <span className="text-green-700 font-medium">Current: ${llm_data.financial_analysis_request.current_savings}</span>
-                  <span className="text-amber-700 font-medium">Goal: ${llm_data.financial_analysis_request.savings_goal}</span>
+                  <span className="text-green-700 font-medium">Current: ${SPENDING_DATA.savings.spent}</span>
+                  <span className="text-amber-700 font-medium">Goal: ${SPENDING_DATA.savings.budget}</span>
                 </div>
                 <div className="w-full bg-white h-4 rounded-full overflow-hidden">
                   <div 
                     className="bg-gradient-to-r from-green-500 to-green-400 h-full transition-all duration-700"
-                    style={{ width: `${savingsProgress}%` }}
+                    style={{ width: `${SPENDING_DATA.savings.progress}%` }}
                   ></div>
                 </div>
-                <p className="text-center mt-2 font-medium text-green-700">{savingsProgress}% Complete</p>
+                <p className="text-center mt-2 font-medium text-green-700">{SPENDING_DATA.savings.progress}% Complete</p>
                 
                 <div className="mt-6 flex justify-between">
                   <div className="text-center">
                     <span className="text-xs text-gray-600 block mb-1">Monthly Income</span>
-                    <span className="text-lg font-bold text-green-700">${llm_data.financial_analysis_request.income}</span>
+                    <span className="text-lg font-bold text-green-700">${SPENDING_DATA.total.income}</span>
                   </div>
                   <div className="text-center">
                     <span className="text-xs text-gray-600 block mb-1">Monthly Expenses</span>
-                    <span className="text-lg font-bold text-red-600">${llm_data.financial_analysis_request.total_spending}</span>
+                    <span className="text-lg font-bold text-red-600">${SPENDING_DATA.categories.reduce((sum, cat) => sum + cat.spent, 0)}</span>
                   </div>
                   <div className="text-center">
                     <span className="text-xs text-gray-600 block mb-1">Savings Rate</span>
-                    <span className="text-lg font-bold text-green-700">20%</span>
+                    <span className="text-lg font-bold text-green-700">17%</span>
                   </div>
                 </div>
-              </div>
-              
-              <div className="text-center">
-                <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors shadow-sm">
-                  Update Savings Goal
-                </button>
               </div>
             </div>
           </div>
@@ -384,11 +522,15 @@ export default function DashboardPage() {
               {selectedCategory !== null ? (
                 <div>
                   <h2 className="text-xl font-semibold mb-4 text-green-800">
-                    {spendingData.labels[selectedCategory]} Details
+                    {pieChartData.labels[selectedCategory]} Details
                   </h2>
                   <div className="bg-green-50 p-3 rounded-lg mb-4 flex items-center justify-between">
                     <span className="text-gray-600">Total:</span>
-                    <span className="text-xl font-bold text-green-700">${spendingData.datasets[0].data[selectedCategory]}</span>
+                    <span className="text-xl font-bold text-green-700">
+                      ${selectedCategory < pieChartData.labels.length - 1 
+                        ? SPENDING_DATA.categories[selectedCategory].budget 
+                        : SPENDING_DATA.savings.budget}
+                    </span>
                   </div>
                   
                   {getCategoryDetails(selectedCategory) && (
@@ -401,10 +543,10 @@ export default function DashboardPage() {
                           <li key={i} className="flex justify-between py-3 px-1 hover:bg-green-50 rounded">
                             <span>{item.label}</span>
                             <span className="font-medium">${item.amount}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   )}
                   
                   <button 
@@ -425,172 +567,167 @@ export default function DashboardPage() {
                   <div className="space-y-3">
                     <div className="bg-green-50 rounded-lg p-3">
                       <p className="font-medium text-green-700">Monthly Total:</p>
-                      <p className="text-xl font-bold">${spendingData.datasets[0].data.reduce((a, b) => a + b, 0)}</p>
+                      <p className="text-xl font-bold">${SPENDING_DATA.total.budget.toLocaleString()}</p>
                     </div>
                     <div className="bg-amber-50 rounded-lg p-3">
                       <p className="font-medium text-amber-700">Largest Expense:</p>
-                      <p className="text-xl font-bold">{spendingData.labels[
-                        spendingData.datasets[0].data.indexOf(
-                          Math.max(...spendingData.datasets[0].data)
-                        )
-                      ]}</p>
+                      <p className="text-xl font-bold">Housing</p>
                     </div>
                     <div className="bg-blue-50 rounded-lg p-3">
                       <p className="font-medium text-blue-700">Smallest Expense:</p>
-                      <p className="text-xl font-bold">{spendingData.labels[
-                        spendingData.datasets[0].data.indexOf(
-                          Math.min(...spendingData.datasets[0].data)
-                        )
-                      ]}</p>
+                      <p className="text-xl font-bold">Entertainment</p>
                     </div>
                   </div>
                 </div>
               )}
-            </div>
-          </div>
-
-          {/* Financial Tips */}
-          <div className="card hover:border-green-200 mb-8 relative overflow-hidden">
-            <div className="absolute -right-8 -bottom-8 text-9xl text-green-50 opacity-20">🌳</div>
-            
-            <h2 className="text-xl font-semibold text-green-800 mb-4 relative z-10">Financial Forest Tips</h2>
-            <div className="grid md:grid-cols-3 gap-4 relative z-10">
-              <div className="bg-green-50 p-4 rounded-lg hover:shadow-md transition-shadow hover:scale-[1.02] transform duration-200">
-                <div className="flex items-center mb-3">
-                  <span className="text-xl text-green-600 mr-2">🌱</span>
-                  <h3 className="font-medium text-green-800">Start Small</h3>
-                </div>
-                <p className="text-sm text-gray-600">Begin with small, consistent contributions to your savings goals. Even $10 per week adds up over time.</p>
-              </div>
-              <div className="bg-green-50 p-4 rounded-lg hover:shadow-md transition-shadow hover:scale-[1.02] transform duration-200">
-                <div className="flex items-center mb-3">
-                  <span className="text-xl text-green-600 mr-2">🌿</span>
-                  <h3 className="font-medium text-green-800">Grow Steadily</h3>
-                </div>
-                <p className="text-sm text-gray-600">Increase your savings rate by 1% every few months to painlessly boost your long-term growth.</p>
-              </div>
-              <div className="bg-green-50 p-4 rounded-lg hover:shadow-md transition-shadow hover:scale-[1.02] transform duration-200">
-                <div className="flex items-center mb-3">
-                  <span className="text-xl text-green-600 mr-2">🌳</span>
-                  <h3 className="font-medium text-green-800">Diversify</h3>
-                </div>
-                <p className="text-sm text-gray-600">Like a healthy forest, a healthy financial portfolio has diversity. Consider multiple savings and investment options.</p>
-              </div>
             </div>
           </div>
         </>
       ) : (
-        <>
-          {/* AI Insights Tab */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-            {/* Good Habits */}
-            <div className="card hover:border-green-200 relative overflow-hidden">
-              <div className="absolute -right-8 -bottom-8 text-8xl text-green-50 opacity-20">🌲</div>
+        /* Insights Tab Content */
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {/* Bar Chart */}
+          <div className="card hover:border-green-200 md:col-span-2 relative overflow-hidden">
+            <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-green-50 rounded-full opacity-30"></div>
+            
+            <h2 className="text-xl font-semibold text-green-800 mb-4 relative z-10">Budget vs. Spending</h2>
+            <div className="h-[350px] relative z-10">
+              <Bar data={barChartData} options={barOptions} />
+            </div>
+          </div>
+          
+          {/* Insights */}
+          <div className="space-y-6">
+            {/* Financial Habits */}
+            <div className="card hover:border-green-200">
+              <h2 className="text-xl font-semibold text-green-800 mb-4">Your Financial Habits</h2>
               
-              <h2 className="text-xl font-semibold mb-4 text-green-800 relative z-10">Growth Areas</h2>
-              {loading ? (
-                <div className="flex items-center justify-center h-32 bg-green-50 rounded-lg">
-                  <div className="animate-pulse text-green-500">Loading insights...</div>
-                </div>
-              ) : error ? (
-                <div className="text-red-500 p-4 bg-red-50 rounded-lg">{error}</div>
-              ) : (
-                <ul className="space-y-3 relative z-10">
+              <div>
+                <h3 className="text-green-700 font-medium flex items-center mb-2">
+                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-2">
+                    <CheckCircle2 size={14} className="text-green-700" />
+                  </div>
+                  Good Habits
+                </h3>
+                <ul className="space-y-2 mb-4">
                   {insights.good_habits.map((habit, index) => (
-                    <li key={index} className="flex items-start p-4 bg-green-50 rounded-lg hover:shadow-md transition-shadow">
-                      <span className="text-green-500 mr-3 text-xl">🌱</span>
-                      <div>
-                        <p className="font-medium text-green-800 mb-1">Healthy Habit {index + 1}</p>
-                        <p className="text-gray-700">{habit}</p>
-                      </div>
+                    <li key={index} className="ml-8 text-sm text-gray-700 relative before:content-['•'] before:absolute before:-left-4 before:text-green-500">
+                      {habit}
                     </li>
                   ))}
                 </ul>
-              )}
-            </div>
-
-            {/* Areas for Improvement */}
-            <div className="card hover:border-green-200 relative overflow-hidden">
-              <div className="absolute -right-8 -bottom-8 text-8xl text-amber-50 opacity-20">✂️</div>
+              </div>
               
-              <h2 className="text-xl font-semibold mb-4 text-amber-700 relative z-10">Areas to Prune</h2>
-              {loading ? (
-                <div className="flex items-center justify-center h-32 bg-amber-50 rounded-lg">
-                  <div className="animate-pulse text-amber-500">Loading insights...</div>
+              <div>
+                <h3 className="text-amber-700 font-medium flex items-center mb-2">
+                  <div className="w-6 h-6 bg-amber-100 rounded-full flex items-center justify-center mr-2">
+                    <AlertCircle size={14} className="text-amber-700" />
+                  </div>
+                  Areas for Improvement
+                </h3>
+                <ul className="space-y-2">
+                  {insights.bad_habits.map((habit, index) => (
+                    <li key={index} className="ml-8 text-sm text-gray-700 relative before:content-['•'] before:absolute before:-left-4 before:text-amber-500">
+                      {habit}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {loading && (
+                <div className="text-center py-2 text-sm text-gray-500">
+                  Updating insights...
                 </div>
-              ) : error ? (
-                <div className="text-red-500 p-4 bg-red-50 rounded-lg">{error}</div>
-              ) : (
-                <ul className="space-y-3 relative z-10">
-            {insights.bad_habits.map((habit, index) => (
-                    <li key={index} className="flex items-start p-4 bg-amber-50 rounded-lg hover:shadow-md transition-shadow">
-                      <span className="text-amber-500 mr-3 text-xl">✂️</span>
-                      <div>
-                        <p className="font-medium text-amber-800 mb-1">Improvement Opportunity {index + 1}</p>
-                        <p className="text-gray-700">{habit}</p>
-                      </div>
-              </li>
-            ))}
-          </ul>
+              )}
+              
+              {error && (
+                <div className="text-center py-2 text-sm text-red-500">
+                  {error}
+                </div>
               )}
             </div>
-          </div>
-          
-          {/* Monthly Spending Trends */}
-          <div className="card hover:border-green-200 mt-6 relative overflow-hidden">
-            <div className="absolute -left-10 -top-10 w-32 h-32 bg-blue-50 rounded-full opacity-30"></div>
             
-            <h2 className="text-xl font-semibold text-green-800 mb-4 relative z-10">Monthly Progress</h2>
-            <div className="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg mb-4 relative z-10">
-              <div className="flex justify-between mb-2 text-sm">
-                <span className="font-medium text-green-700">Previous 3 Months</span>
-                <span className="font-medium text-blue-700">Savings Growth</span>
-              </div>
-              <div className="flex h-48 items-end justify-around">
-                {[60, 68, 75].map((height, index) => (
-                  <div key={index} className="flex flex-col items-center">
-                    <div 
-                      className="w-16 bg-gradient-to-t from-green-600 to-green-400 rounded-t-lg transition-all duration-700"
-                      style={{ height: `${height}%` }}
-                    ></div>
-                    <div className="text-xs mt-2 font-medium">
-                      {['March', 'April', 'May'][index]}
-                    </div>
+            {/* Spending Trends */}
+            <div className="card hover:border-green-200">
+              <h2 className="text-xl font-semibold text-green-800 mb-4">Spending Trends</h2>
+              
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Food</span>
+                  <div className="flex items-center text-green-600 text-sm">
+                    <TrendingDown size={14} className="mr-1" /> 12% from last month
                   </div>
-                ))}
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Entertainment</span>
+                  <div className="flex items-center text-green-600 text-sm">
+                    <TrendingDown size={14} className="mr-1" /> 8% from last month
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Housing</span>
+                  <div className="flex items-center text-gray-600 text-sm">
+                    <MinusIcon size={14} className="mr-1" /> No change
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Transportation</span>
+                  <div className="flex items-center text-amber-600 text-sm">
+                    <TrendingUp size={14} className="mr-1" /> 5% from last month
+                  </div>
+                </div>
               </div>
             </div>
-            <p className="text-center text-sm text-green-600 relative z-10">
-              Your financial forest is growing steadily each month!
-            </p>
           </div>
-          
-          {/* Forest Actions */}
-          <div className="card hover:border-green-200 mt-6 relative overflow-hidden">
-            <div className="absolute -right-8 -top-8 w-24 h-24 bg-green-50 rounded-full opacity-50"></div>
-            
-            <h2 className="text-xl font-semibold text-green-800 mb-4 relative z-10">Forest Actions</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 relative z-10">
-              <button className="bg-green-600 text-white p-3 rounded-lg hover:bg-green-700 transition-colors flex flex-col items-center text-center shadow-sm">
-                <span className="text-2xl mb-2">🌱</span>
-                <span className="text-sm">Start New Savings Goal</span>
-              </button>
-              <button className="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-colors flex flex-col items-center text-center shadow-sm">
-                <span className="text-2xl mb-2">💧</span>
-                <span className="text-sm">Add to Emergency Fund</span>
-              </button>
-              <button className="bg-amber-600 text-white p-3 rounded-lg hover:bg-amber-700 transition-colors flex flex-col items-center text-center shadow-sm">
-                <span className="text-2xl mb-2">✂️</span>
-                <span className="text-sm">Cut Unnecessary Expense</span>
-              </button>
-              <button className="bg-purple-600 text-white p-3 rounded-lg hover:bg-purple-700 transition-colors flex flex-col items-center text-center shadow-sm">
-                <span className="text-2xl mb-2">🔍</span>
-                <span className="text-sm">Analyze Spending Habits</span>
-              </button>
+        </div>
+      )}
+
+      {/* Recent Transactions Section */}
+      <div className="mt-8">
+        <h2 className="text-xl font-semibold text-green-800 mb-4">Recent Transactions</h2>
+        <div className="bg-white rounded-lg shadow-md border border-green-100 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full">
+              <thead>
+                <tr className="bg-green-50 border-b border-green-100">
+                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Date</th>
+                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Merchant</th>
+                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Category</th>
+                  <th className="py-3 px-4 text-right text-xs font-medium text-gray-600 uppercase tracking-wider">Amount</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {recentTransactions.map(transaction => (
+                  <tr key={transaction.id} className="hover:bg-green-50/30">
+                    <td className="py-3 px-4 text-sm text-gray-600">{transaction.date}</td>
+                    <td className="py-3 px-4">
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                          {transaction.iconFallback && (
+                            <transaction.iconFallback size={16} className="text-green-600" />
+                          )}
+                        </div>
+                        <span className="text-sm font-medium">{transaction.merchant}</span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 text-sm text-gray-600">{transaction.category}</td>
+                    <td className="py-3 px-4 text-sm text-right font-medium text-gray-800">${transaction.amount.toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="py-3 px-4 bg-gray-50 border-t border-gray-100">
+            <Link 
+              href="/main/transactions" 
+              className="text-sm text-green-600 font-medium flex items-center hover:text-green-700"
+            >
+              View all transactions
+              <ArrowUpRight size={14} className="ml-1" />
+            </Link>
+          </div>
         </div>
       </div>
-        </>
-      )}
     </div>
   );
 }
