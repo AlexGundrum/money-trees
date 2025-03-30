@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Menu, X, Home, PiggyBank, BookOpen, BarChart2, LogOut, Leaf, User, Settings } from "lucide-react"
+import { Menu, X, Home, PiggyBank, BookOpen, BarChart2, LogOut, Leaf, User, Settings, Wallet } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import Image from "next/image"
@@ -56,6 +56,7 @@ const NavBar = ({ children }) => {
 
   const navItems = [
     { href: "/main/dashboard", icon: Home, label: "Dashboard" },
+    { href: "/main/budgeting", icon: Wallet, label: "Budgeting" },
     { href: "/main/savings", icon: PiggyBank, label: "Savings" },
     { href: "/main/forest", icon: Leaf, label: "Forest" },
     { href: "/main/education", icon: BookOpen, label: "Education" },
