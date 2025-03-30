@@ -3,6 +3,9 @@
 import { useState, useRef, useEffect } from "react"
 import { Menu, X, Home, PiggyBank, BookOpen, BarChart2 } from "lucide-react" // Removed LogOut
 import Link from "next/link"
+import Script from "next/script"
+import React from "react";
+import PieChart from "./pieChart"; // Import the component
 
 const Dashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
@@ -113,8 +116,8 @@ const Dashboard = () => {
 
           <div className="flex flex-col md:flex-row md:space-x-8">
             <div className="md:w-2/3">
-              <div className="bg-white rounded-2xl shadow-md p-6 min-h-[24rem] flex items-center justify-center">
-                <p className="text-gray-400 text-lg">Spending Overview Chart</p>
+              <div style={{ width: "50%", margin: "auto", padding: "20px" }}>
+                <PieChart style={{ width: "10%", margin: "auto", padding: "20px" }}/>
               </div>
             </div>
 

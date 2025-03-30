@@ -1,0 +1,11 @@
+.navBar{
+    height: 96px;
+    border-style: solid;
+    border-width: 3px;
+    border-color: #000000;
+    font-size: 20px;
+    text-align: center;
+}
+.title{
+    padding: 5px;
+}
