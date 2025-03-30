@@ -401,10 +401,10 @@ export default function DashboardPage() {
                           <li key={i} className="flex justify-between py-3 px-1 hover:bg-green-50 rounded">
                             <span>{item.label}</span>
                             <span className="font-medium">${item.amount}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+              </li>
+            ))}
+          </ul>
+        </div>
                   )}
                   
                   <button 
@@ -522,16 +522,16 @@ export default function DashboardPage() {
                 <div className="text-red-500 p-4 bg-red-50 rounded-lg">{error}</div>
               ) : (
                 <ul className="space-y-3 relative z-10">
-                  {insights.bad_habits.map((habit, index) => (
+            {insights.bad_habits.map((habit, index) => (
                     <li key={index} className="flex items-start p-4 bg-amber-50 rounded-lg hover:shadow-md transition-shadow">
                       <span className="text-amber-500 mr-3 text-xl">✂️</span>
                       <div>
                         <p className="font-medium text-amber-800 mb-1">Improvement Opportunity {index + 1}</p>
                         <p className="text-gray-700">{habit}</p>
                       </div>
-                    </li>
-                  ))}
-                </ul>
+              </li>
+            ))}
+          </ul>
               )}
             </div>
           </div>
@@ -587,8 +587,8 @@ export default function DashboardPage() {
                 <span className="text-2xl mb-2">🔍</span>
                 <span className="text-sm">Analyze Spending Habits</span>
               </button>
-            </div>
-          </div>
+        </div>
+      </div>
         </>
       )}
     </div>
