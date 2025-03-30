@@ -1,0 +1,113 @@
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f9fc;
+    color: #333;
+    line-height: 1.6;
+    padding: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 30px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    color: #0a74da;
+}
+
+header p {
+    font-size: 1.1em;
+    color: #555;
+}
+
+h2 {
+    font-size: 1.8em;
+    margin-top: 20px;
+    margin-bottom: 15px;
+    color: #f57c00; /* Orange color for headers */
+    border-bottom: 2px solid #f57c00;
+    padding-bottom: 5px;
+}
+
+section {
+    margin-bottom: 25px;
+    font-size: 1.1em;
+    color: #333;
+}
+
+section p {
+    margin-bottom: 15px;
+}
+
+a {
+    color: #0a74da;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: #f57c00;
+}
+
+ul {
+    list-style: none;
+    padding-left: 20px;
+}
+
+ul li {
+    margin-bottom: 10px;
+}
+
+/* Section backgrounds */
+.what-is-budgeting {
+    background-color: #e8f4fd;
+    border-left: 6px solid #0a74da;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.why-budgeting-important {
+    background-color: #fff4e5;
+    border-left: 6px solid #f57c00;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.budgeting-dynamic {
+    background-color: #e8f7e6;
+    border-left: 6px solid #4caf50; /* Green color for budgeting is dynamic */
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.next-steps {
+    background-color: #fff3e6;
+    border-left: 6px solid #9c27b0; /* Purple color for next steps */
+    padding: 15px;
+    border-radius: 8px;
+}
+
+/* Adding a soft shadow to headers */
+h2 {
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
