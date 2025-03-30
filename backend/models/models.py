@@ -24,6 +24,7 @@ class Transaction(db.Model):
     amount = db.Column(db.Float, nullable=False)
     is_income = db.Column(db.Boolean, default=False)
     category = db.Column(db.String(50), default='other')
+    subcategory = db.Column(db.String(50))
     date = db.Column(db.DateTime, default=datetime.utcnow)
     user_email = db.Column(db.String(120), db.ForeignKey('users.email'))
     

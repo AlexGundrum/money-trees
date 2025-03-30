@@ -41,7 +41,8 @@ export default function MainAppLayout({ children }) {
 
   const navItems = [
     { name: 'Dashboard', path: '/main/dashboard', icon: '📊' },
-    { name: 'Savings Goal', path: '/main/savings', icon: '💰' },
+    { name: 'Budgeting', path: '/main/budgeting', icon: '💰' },
+    { name: 'Savings Goal', path: '/main/savings', icon: '🎯' },
     { name: 'Education', path: '/main/education', icon: '📚' },
     { name: 'What if', path: '/main/whatif', icon: '🤓' },
   ];
