@@ -1,7 +1,16 @@
-from flask import request, jsonify, current_app
-import openai
+from flask import request, jsonify, Blueprint
+from openai import OpenAI
 import os
+from dotenv import load_dotenv
 
+# Load environment variables
+load_dotenv()
+api_key = os.getenv("OPENAI_API_KEY")
+
+# Initialize OpenAI client
+client = OpenAI(api_key=api_key)
+
+# Create Flask Blueprint
 ai_bp = Blueprint('ai', __name__)
 
 @ai_bp.route('/chat', methods=['POST'])
@@ -17,10 +26,12 @@ def chat():
     }
     """
     data = request.json
-    openai.api_key = os.getenv('OPENAI_API_KEY')
+
+    if not data or "messages" not in data:
+        return jsonify({"error": "Missing 'messages' field in request body"}), 400
 
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model=data.get('model', 'gpt-3.5-turbo'),
             messages=data['messages'],
             max_tokens=data.get('max_tokens', 200),
